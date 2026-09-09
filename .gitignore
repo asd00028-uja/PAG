@@ -1,0 +1,22 @@
+# Carpetas de compilación y salida
+build/
+cmake-build-*/
+bin/
+out/
+
+# Configuración del IDE (CLion / JetBrains)
+.idea/
+*.iws
+*.iml
+
+# Archivos objeto y ejecutables
+*.o
+*.obj
+*.exe
+pr01
+PAG_Practica1
+
+# Archivos de sistema / temporales
+.DS_Store
+*~
+*.swp
