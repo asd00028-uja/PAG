@@ -18,6 +18,9 @@ namespace PAG {
         virtual ~Renderer();
         static Renderer& getInstancia();
         void refrescar();
+        void inicializar();
+        void cambiarTamano(int ancho, int alto);
+        void setColorFondo(float r, float g, float b, float a = 1.0f);
     };
 
 }

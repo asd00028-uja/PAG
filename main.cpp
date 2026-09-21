@@ -4,6 +4,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+#include "Renderer.h"
+
 // - Esta función callback será llamada cuando GLFW produzca algún error
 void error_callback ( int errno, const char* desc )
 { std::string aux (desc);
@@ -13,7 +15,8 @@ void error_callback ( int errno, const char* desc )
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback ( GLFWwindow *window ) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    PAG::Renderer::getInstancia().refrescar();
+
     // - GLFW usa un doble buffer para que no haya parpadeo. Esta orden
     // intercambia el buffer back (que se ha estado dibujando) por el
     // que se mostraba hasta ahora front. Debe ser la última orden de
@@ -24,7 +27,8 @@ void window_refresh_callback ( GLFWwindow *window ) {
 // - Esta función callback será llamada cada vez que se cambie el tamaño
 // del área de dibujo OpenGL.
 void framebuffer_size_callback ( GLFWwindow *window, int width, int height )
-{ glViewport ( 0, 0, width, height );
+{
+    PAG::Renderer::getInstancia().cambiarTamano(width, height);
     std::cout << "Resize callback called" << std::endl;
 }
 // - Esta función callback será llamada cada vez que se pulse una tecla
@@ -52,9 +56,9 @@ float colorActual[4] = {0.6f, 0.6f, 0.6f, 1.0f};
 // del ratón sobre el área de dibujo OpenGL.
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
 {
-    std::cout << "Movida la rueda del ratón " << xoffset
-              << " Unidades en horizontal y " << yoffset
-              << " unidades en vertical" << std::endl;
+    // std::cout << "Movida la rueda del ratón " << xoffset
+              // << " Unidades en horizontal y " << yoffset
+              // << " unidades en vertical" << std::endl;
 
     // Cambiamos un canal aleatorio entre los 3 primeros (rgb)
     int canal = rand() % 3;
@@ -74,7 +78,7 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
         else colorActual[canal] -= 0.1f;
     }
 
-    glClearColor ( colorActual[0], colorActual[1], colorActual[2], colorActual[3] );
+    PAG::Renderer::getInstancia().setColorFondo(colorActual[0], colorActual[1], colorActual[2], colorActual[3]);
 }
 
 
@@ -120,12 +124,6 @@ int main()
         glfwTerminate ();
         return -3;
     }
-    // - Interrogamos a OpenGL para que nos informe de las propiedades del contexto
-    // 3D construido.
-    std::cout << glGetString ( GL_RENDERER ) << std::endl
-    << glGetString ( GL_VENDOR ) << std::endl
-    << glGetString ( GL_VERSION ) << std::endl
-    << glGetString ( GL_SHADING_LANGUAGE_VERSION ) << std::endl;
 
     // - Registramos los callbacks que responderán a los eventos principales
     glfwSetWindowRefreshCallback ( window, window_refresh_callback );
@@ -134,12 +132,7 @@ int main()
     glfwSetMouseButtonCallback ( window, mouse_button_callback );
     glfwSetScrollCallback ( window, scroll_callback );
 
-    // - Establecemos un gris medio como color con el que se borrará el frame buffer.
-    // No tiene por qué ejecutarse en cada paso por el ciclo de eventos.
-    glClearColor ( 0.6, 0.6, 0.6, 1.0 );
-    // - Le decimos a OpenGL que tenga en cuenta la profundidad a la hora de dibujar.
-    // No tiene por qué ejecutarse en cada paso por el ciclo de eventos.
-    glEnable ( GL_DEPTH_TEST );
+    PAG::Renderer::getInstancia().inicializar();
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse. Por ejemplo, si el usuario pulsa el
     // botón de cerrar la ventana (la X).
