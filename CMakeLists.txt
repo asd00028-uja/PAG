@@ -8,7 +8,9 @@ file( GLOB GLAD_FILES GLAD/src/*.c )
 
 # Indica qué archivos hay que compilar para generar el ejecutable
 add_executable( ${PROJECT_NAME} ${MY_FILES}
-                                ${GLAD_FILES} )
+                                ${GLAD_FILES}
+        Renderer.cpp
+        Renderer.h)
 
 # Indica directorios (adicionales a los por defecto) para buscar includes
 target_include_directories( ${PROJECT_NAME} PUBLIC GLAD/include )
