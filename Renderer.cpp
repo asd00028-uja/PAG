@@ -4,12 +4,20 @@
 #include <glad/glad.h>
 #include <GL/gl.h>
 #include "Renderer.h"
+
+#include <cstdarg>
+
 namespace PAG {
     // Instancia inicializada a NULL
     Renderer* Renderer::instancia = nullptr;
 
     // Constructor
-    Renderer::Renderer() {}
+    Renderer::Renderer() {
+        colorFondo[0] = 0.6f;
+        colorFondo[1] = 0.6f;
+        colorFondo[2] = 0.6f;
+        colorFondo[3] = 1.0f;
+    }
 
     // Destructor
     Renderer::~Renderer() {}
@@ -32,7 +40,7 @@ namespace PAG {
     }
 
     void Renderer::inicializar() {
-        glClearColor ( 0.6, 0.6, 0.6, 1.0 );
+        glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
         glEnable ( GL_DEPTH_TEST );
     }
 
@@ -41,6 +49,25 @@ namespace PAG {
     }
 
     void Renderer::setColorFondo(float r, float g, float b, float a) {
-        glClearColor(r, g, b, a);
+        colorFondo[0] = r;
+        colorFondo[1] = g;
+        colorFondo[2] = b;
+        colorFondo[3] = a;
+        glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
+    }
+
+    void Renderer::wakeUp(WindowType t, ...) {
+        switch (t) {
+            case WindowType::Background: {
+                std::va_list args;
+                va_start(args, t);
+                float* nuevoColor = va_arg(args, float*);
+                setColorFondo(nuevoColor[0], nuevoColor[1], nuevoColor[2], 1.0f);
+                va_end(args);
+                break;
+            }
+            default:
+                break;
+        }
     }
 }

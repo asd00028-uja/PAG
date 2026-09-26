@@ -5,13 +5,17 @@
 #ifndef PR01_RENDERER_H
 #define PR01_RENDERER_H
 
+#include "Listener.h"
+
 // Dentro de el espacio de nombres PAG
 namespace PAG {
 
-    class Renderer {
+    class Renderer : public Listener {
 
     private:
         static Renderer* instancia; // Instancia, patrón singleton
+        float colorFondo[4];
+
         Renderer();
 
     public:
@@ -21,6 +25,8 @@ namespace PAG {
         void inicializar();
         void cambiarTamano(int ancho, int alto);
         void setColorFondo(float r, float g, float b, float a = 1.0f);
+
+        void wakeUp(WindowType t, ...) override;
     };
 
 }
