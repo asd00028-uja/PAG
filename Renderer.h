@@ -16,6 +16,14 @@ namespace PAG {
         static Renderer* instancia; // Instancia, patrón singleton
         float colorFondo[4];
 
+        // Identificadores temporales de los shaders y objectos
+        GLuint idVS = 0; // Identificador del vertex shader
+        GLuint idFS = 0; // Identificador del fragment shader
+        GLuint idSP = 0; // Identificador del shader program
+        GLuint idVAO = 0; // Identificador del vertex array object
+        GLuint idVBO = 0; // Identificador del vertex buffer object
+        GLuint idIBO = 0; // Identificador del index buffer object
+
         Renderer();
 
     public:
@@ -27,6 +35,8 @@ namespace PAG {
         void setColorFondo(float r, float g, float b, float a = 1.0f);
 
         void wakeUp(WindowType t, ...) override;
+
+        int creaShaderProgram();
     };
 
 }

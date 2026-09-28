@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(pr02)
+project(pr03)
 set(CMAKE_CXX_STANDARD 17)
 
 # Define variables agrupando nombres de archivo
