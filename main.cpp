@@ -146,7 +146,7 @@ int main()
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
     try {
-        PAG::Renderer::getInstancia().creaShaderProgram();
+        PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
         PAG::Renderer::getInstancia().creaModelo();
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().anadirMensaje(e.what());

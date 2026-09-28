@@ -5,6 +5,7 @@
 #ifndef PR01_RENDERER_H
 #define PR01_RENDERER_H
 
+#include <string>
 #include "Listener.h"
 
 // Dentro de el espacio de nombres PAG
@@ -36,7 +37,7 @@ namespace PAG {
 
         void wakeUp(WindowType t, ...) override;
 
-        void creaShaderProgram();
+        void creaShaderProgram(std::string nombre);
         void creaModelo();
     };
 

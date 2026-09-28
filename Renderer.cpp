@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 #include <stdexcept>
+#include <fstream>
+#include <sstream>
 
 namespace PAG {
     // Instancia inicializada a NULL
@@ -105,21 +107,30 @@ namespace PAG {
      * Método para crear, compilar y enlazar el shader program
      * @throws runtime_error si falla algun shader
      */
-    void Renderer::creaShaderProgram() {
-        std::string miVertexShader =
-        "#version 410\n"
-        "layout (location = 0) in vec3 posicion;\n"
-        "void main ()\n"
-        // "{ gl_Position = vec4 ( posicion_error, 1 );\n"
-        " { gl_Position = vec4 ( posicion, 1 );\n"
-        "}\n";
+    void Renderer::creaShaderProgram(std::string nombre) {
+        // Leer shader VS
+        std::string filenameVS = nombre + "-vs.glsl";
+        std::ifstream shaderSourceFileVS;
+        shaderSourceFileVS.open(filenameVS);
+        if (!shaderSourceFileVS) {
+            throw std::runtime_error("Cannot open shader source file: " + filenameVS);
+        }
+        std::stringstream shaderSourceStreamVS;
+        shaderSourceStreamVS << shaderSourceFileVS.rdbuf();
+        std::string miVertexShader = shaderSourceStreamVS.str();
+        shaderSourceFileVS.close();
 
-        std::string miFragmentShader =
-        "#version 410\n"
-        "out vec4 colorFragmento;\n"
-        "void main ()\n"
-        "{ colorFragmento = vec4 ( 1.0, .4, .2, 1.0 );\n"
-        "}\n";
+        // - Leer  shader FS
+        std::string filenameFS = nombre + "-fs.glsl";
+        std::ifstream shaderSourceFileFS;
+        shaderSourceFileFS.open(filenameFS);
+        if (!shaderSourceFileFS) {
+            throw std::runtime_error("Cannot open shader source file: " + filenameFS);
+        }
+        std::stringstream shaderSourceStreamFS;
+        shaderSourceStreamFS << shaderSourceFileFS.rdbuf();
+        std::string miFragmentShader = shaderSourceStreamFS.str();
+        shaderSourceFileFS.close();
 
         idVS = glCreateShader ( GL_VERTEX_SHADER );
         if (idVS == 0) {
