@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string>
+#include <stdexcept>
 // IMPORTANTE: El include de GLAD debe estar siempre ANTES de el de GLFW
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -144,8 +145,12 @@ int main()
     PAG::GUI::getInstancia().inicializar(window);
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
-    PAG::Renderer::getInstancia().creaShaderProgram();
-    PAG::Renderer::getInstancia().creaModelo();
+    try {
+        PAG::Renderer::getInstancia().creaShaderProgram();
+        PAG::Renderer::getInstancia().creaModelo();
+    } catch (const std::exception& e) {
+        PAG::GUI::getInstancia().anadirMensaje(e.what());
+    }
 
     PAG::GUI::getInstancia().anadirMensaje("Starting Application PAG - Prueba 01");
     // - Ciclo de eventos de la aplicación. La condición de parada es que la

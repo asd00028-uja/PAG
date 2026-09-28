@@ -8,6 +8,7 @@
 #include <cstdarg>
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 namespace PAG {
     // Instancia inicializada a NULL
@@ -59,10 +60,12 @@ namespace PAG {
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-        glUseProgram ( idSP );
-        glBindVertexArray ( idVAO );
-        glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
-        glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
+        if ( idSP != 0 && idVAO != 0 ) {
+            glUseProgram ( idSP );
+            glBindVertexArray ( idVAO );
+            glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
+            glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
+        }
     }
 
     void Renderer::inicializar() {
@@ -100,15 +103,15 @@ namespace PAG {
 
      /**
      * Método para crear, compilar y enlazar el shader program
-     * @note No se incluye ninguna comprobación de errores
-     * @return 1 si éxito, 0 si no.
+     * @throws runtime_error si falla algun shader
      */
-    int Renderer::creaShaderProgram() {
+    void Renderer::creaShaderProgram() {
         std::string miVertexShader =
         "#version 410\n"
         "layout (location = 0) in vec3 posicion;\n"
         "void main ()\n"
-        "{ gl_Position = vec4 ( posicion, 1 );\n"
+        // "{ gl_Position = vec4 ( posicion_error, 1 );\n"
+        " { gl_Position = vec4 ( posicion, 1 );\n"
         "}\n";
 
         std::string miFragmentShader =
@@ -120,8 +123,7 @@ namespace PAG {
 
         idVS = glCreateShader ( GL_VERTEX_SHADER );
         if (idVS == 0) {
-            std::cout << "Cannot create shader object." << std::endl;
-            return 0;
+            throw std::runtime_error("Cannot create vertex shader object.");
         }
 
         const GLchar* fuenteVS = miVertexShader.c_str ();
@@ -139,16 +141,13 @@ namespace PAG {
                 glGetShaderInfoLog(idVS, logLen, &written, cLogString);
                 logString.assign(cLogString);
                 delete[] cLogString;
-                std::cout << "Cannot compile shader " << GL_VERTEX_SHADER << std::endl;
-                std::cout << logString << std::endl;
             }
-            return 0;
+            throw std::runtime_error("Cannot compile shader " + std::to_string(GL_VERTEX_SHADER) + ":\n" + logString);
         }
 
         idFS = glCreateShader ( GL_FRAGMENT_SHADER );
         if (idFS == 0) {
-            std::cout << "Cannot create shader object." << std::endl;
-            return 0;
+            throw std::runtime_error("Cannot create fragment shader object.");
         }
 
         const GLchar* fuenteFS = miFragmentShader.c_str ();
@@ -166,18 +165,15 @@ namespace PAG {
                 glGetShaderInfoLog(idFS, logLen, &written, cLogString);
                 logString.assign(cLogString);
                 delete[] cLogString;
-                std::cout << "Cannot compile shader " << GL_FRAGMENT_SHADER << std::endl;
-                std::cout << logString << std::endl;
             }
-            return 0;
+            throw std::runtime_error("Cannot compile shader " + std::to_string(GL_FRAGMENT_SHADER) + ":\n" + logString);
         }
 
 
         if (idSP <= 0) {
             idSP = glCreateProgram ();
             if (idSP == 0) {
-                std::cout << "Cannot create shader program." << std::endl;
-                return 0;
+                throw std::runtime_error("Cannot create shader program.");
             }
         }
 
@@ -186,10 +182,10 @@ namespace PAG {
         glLinkProgram ( idSP );
 
         GLint linkSuccess = 0;
-        std::string logString = "";
         glGetProgramiv(idSP, GL_LINK_STATUS, &linkSuccess);
         if (linkSuccess == GL_FALSE) {
             GLint logLen = 0;
+            std::string logString = "";
             glGetProgramiv(idSP, GL_INFO_LOG_LENGTH, &logLen);
             if (logLen > 0) {
                 char * cLogString = new char[logLen];
@@ -197,13 +193,10 @@ namespace PAG {
                 glGetProgramInfoLog(idSP, logLen, &written, cLogString);
                 logString.assign(cLogString);
                 delete[] cLogString;
-                std::cout << "Cannot link shader " << std::endl;
-                std::cout << logString << std::endl;
             }
-            return 0;
+            throw std::runtime_error("Cannot link shader:\n" + logString);
         }
 
-        return 1;
     }
 
     /**

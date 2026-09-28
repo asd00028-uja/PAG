@@ -36,7 +36,7 @@ namespace PAG {
 
         void wakeUp(WindowType t, ...) override;
 
-        int creaShaderProgram();
+        void creaShaderProgram();
         void creaModelo();
     };
 
