@@ -216,18 +216,49 @@ namespace PAG {
     */
     void Renderer::creaModelo() {
 
-        GLfloat vertices[] = { -.5, -.5, 0,
+        /*GLfloat vertices[] = { -.5, -.5, 0,
                                 .5, -.5, 0,
                                 .0, .5, 0 };
+
+        GLfloat colores[] = {   1.0f, 0.0f, 0.0f,
+                                0.0f, 1.0f, 0.0f,
+                                0.0f, 0.0f, 1.0f };*/
+
+        // Version entrelazada, primeros tres son las coordenadas seguidos de los colores.
+        GLfloat vertices[] = {
+            -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
+             0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
+             0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f
+        };
 
         GLuint indices[] = { 0, 1, 2 };
         glGenVertexArrays ( 1, &idVAO );
         glBindVertexArray ( idVAO );
+
         glGenBuffers ( 1, &idVBO );
         glBindBuffer ( GL_ARRAY_BUFFER, idVBO );
-        glBufferData ( GL_ARRAY_BUFFER, 9*sizeof(GLfloat), vertices, GL_STATIC_DRAW );
+        /*glBufferData ( GL_ARRAY_BUFFER, 9*sizeof(GLfloat), vertices, GL_STATIC_DRAW );
         glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), nullptr );
+        glEnableVertexAttribArray ( 0 );*/
+
+        // Entrelazada:
+        // Cambia el tamaño al doble (doble de datos al incluir los colores)
+        // Y el stride pasa de 3 (Tener que coger los primeros 3 datos y saltar a los siguientes 3) a 6
+        glBufferData ( GL_ARRAY_BUFFER, 18*sizeof(GLfloat), vertices, GL_STATIC_DRAW );
+        glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 6*sizeof(GLfloat), nullptr );
         glEnableVertexAttribArray ( 0 );
+        // Con la entrelazada se usa el primer VBO con dos VertexAttribPointer:
+        // Igual que el anterior pero con un offset de 3 GLfloat
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
+        glEnableVertexAttribArray(1);
+
+        // VBO de colores, con el (location = 1)
+        /*glGenBuffers(1, &idVBOColor);
+        glBindBuffer(GL_ARRAY_BUFFER, idVBOColor);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(colores), colores, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), nullptr);
+        glEnableVertexAttribArray(1);*/
+
         glGenBuffers ( 1, &idIBO );
         glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
         glBufferData ( GL_ELEMENT_ARRAY_BUFFER, 3*sizeof(GLuint), indices, GL_STATIC_DRAW );
