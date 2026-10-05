@@ -7,6 +7,7 @@
 
 #include <string>
 #include "Listener.h"
+#include "ShaderProgram.h"
 
 // Dentro de el espacio de nombres PAG
 namespace PAG {
@@ -18,9 +19,8 @@ namespace PAG {
         float colorFondo[4];
 
         // Identificadores temporales de los shaders y objectos
-        GLuint idVS = 0; // Identificador del vertex shader
-        GLuint idFS = 0; // Identificador del fragment shader
-        GLuint idSP = 0; // Identificador del shader program
+        ShaderProgram* shaderProgram = nullptr;
+
         GLuint idVAO = 0; // Identificador del vertex array object
         GLuint idVBO = 0; // Identificador del vertex buffer object
         GLuint idVBOColor = 0; // Id para los colores
@@ -39,7 +39,7 @@ namespace PAG {
 
         void wakeUp(bool enviar, WindowType t, ...) override;
 
-        void creaShaderProgram(std::string nombre);
+        void creaShaderProgram(const std::string& nombre);
         void creaModelo();
     };
 

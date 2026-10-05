@@ -26,15 +26,6 @@ namespace PAG {
 
     // Destructor
     Renderer::~Renderer() {
-        if ( idVS != 0 )
-        { glDeleteShader ( idVS );
-        }
-        if ( idFS != 0 )
-        { glDeleteShader ( idFS );
-        }
-        if ( idSP != 0 )
-        { glDeleteProgram ( idSP );
-        }
         if ( idVBO != 0 )
         { glDeleteBuffers ( 1, &idVBO );
         }
@@ -44,6 +35,8 @@ namespace PAG {
         if ( idVAO != 0 )
         { glDeleteVertexArrays ( 1, &idVAO );
         }
+
+        delete shaderProgram;
     }
 
     /**
@@ -62,8 +55,8 @@ namespace PAG {
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-        if ( idSP != 0 && idVAO != 0 ) {
-            glUseProgram ( idSP );
+        if ( shaderProgram && idVAO != 0 ) {
+            shaderProgram->usar();
             glBindVertexArray ( idVAO );
             glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
             glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
@@ -119,107 +112,10 @@ namespace PAG {
      * Método para crear, compilar y enlazar el shader program
      * @throws runtime_error si falla algun shader
      */
-    void Renderer::creaShaderProgram(std::string nombre) {
-        // Leer shader VS
-        std::string filenameVS = nombre + "-vs.glsl";
-        std::ifstream shaderSourceFileVS;
-        shaderSourceFileVS.open(filenameVS);
-        if (!shaderSourceFileVS) {
-            throw std::runtime_error("Cannot open shader source file: " + filenameVS);
-        }
-        std::stringstream shaderSourceStreamVS;
-        shaderSourceStreamVS << shaderSourceFileVS.rdbuf();
-        std::string miVertexShader = shaderSourceStreamVS.str();
-        shaderSourceFileVS.close();
-
-        // - Leer  shader FS
-        std::string filenameFS = nombre + "-fs.glsl";
-        std::ifstream shaderSourceFileFS;
-        shaderSourceFileFS.open(filenameFS);
-        if (!shaderSourceFileFS) {
-            throw std::runtime_error("Cannot open shader source file: " + filenameFS);
-        }
-        std::stringstream shaderSourceStreamFS;
-        shaderSourceStreamFS << shaderSourceFileFS.rdbuf();
-        std::string miFragmentShader = shaderSourceStreamFS.str();
-        shaderSourceFileFS.close();
-
-        idVS = glCreateShader ( GL_VERTEX_SHADER );
-        if (idVS == 0) {
-            throw std::runtime_error("Cannot create vertex shader object.");
-        }
-
-        const GLchar* fuenteVS = miVertexShader.c_str ();
-        glShaderSource ( idVS, 1, &fuenteVS, nullptr );
-        glCompileShader ( idVS );
-        GLint compileResultVS;
-        glGetShaderiv ( idVS, GL_COMPILE_STATUS, &compileResultVS );
-        if (compileResultVS == GL_FALSE) {
-            GLint logLen = 0;
-            std::string logString = "";
-            glGetShaderiv(idVS, GL_INFO_LOG_LENGTH, &logLen);
-            if (logLen > 0) {
-                char * cLogString = new char[logLen];
-                GLint written = 0;
-                glGetShaderInfoLog(idVS, logLen, &written, cLogString);
-                logString.assign(cLogString);
-                delete[] cLogString;
-            }
-            throw std::runtime_error("Cannot compile shader " + std::to_string(GL_VERTEX_SHADER) + ":\n" + logString);
-        }
-
-        idFS = glCreateShader ( GL_FRAGMENT_SHADER );
-        if (idFS == 0) {
-            throw std::runtime_error("Cannot create fragment shader object.");
-        }
-
-        const GLchar* fuenteFS = miFragmentShader.c_str ();
-        glShaderSource ( idFS, 1, &fuenteFS, nullptr );
-        glCompileShader ( idFS );
-        GLint compileResultFS;
-        glGetShaderiv ( idFS, GL_COMPILE_STATUS, &compileResultFS );
-        if (compileResultFS == GL_FALSE) {
-            GLint logLen = 0;
-            std::string logString = "";
-            glGetShaderiv(idFS, GL_INFO_LOG_LENGTH, &logLen);
-            if (logLen > 0) {
-                char * cLogString = new char[logLen];
-                GLint written = 0;
-                glGetShaderInfoLog(idFS, logLen, &written, cLogString);
-                logString.assign(cLogString);
-                delete[] cLogString;
-            }
-            throw std::runtime_error("Cannot compile shader " + std::to_string(GL_FRAGMENT_SHADER) + ":\n" + logString);
-        }
-
-
-        if (idSP <= 0) {
-            idSP = glCreateProgram ();
-            if (idSP == 0) {
-                throw std::runtime_error("Cannot create shader program.");
-            }
-        }
-
-        glAttachShader ( idSP, idVS );
-        glAttachShader ( idSP, idFS );
-        glLinkProgram ( idSP );
-
-        GLint linkSuccess = 0;
-        glGetProgramiv(idSP, GL_LINK_STATUS, &linkSuccess);
-        if (linkSuccess == GL_FALSE) {
-            GLint logLen = 0;
-            std::string logString = "";
-            glGetProgramiv(idSP, GL_INFO_LOG_LENGTH, &logLen);
-            if (logLen > 0) {
-                char * cLogString = new char[logLen];
-                GLint written = 0;
-                glGetProgramInfoLog(idSP, logLen, &written, cLogString);
-                logString.assign(cLogString);
-                delete[] cLogString;
-            }
-            throw std::runtime_error("Cannot link shader:\n" + logString);
-        }
-
+    void Renderer::creaShaderProgram(const std::string& nombre) {
+        ShaderProgram* nuevo = new ShaderProgram(nombre);
+        delete shaderProgram;
+        shaderProgram = nuevo;
     }
 
     /**
