@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(pr03)
+project(pr04)
 set(CMAKE_CXX_STANDARD 17)
 
 # Define variables agrupando nombres de archivo
@@ -10,10 +10,7 @@ file( GLOB IMGUI_FILES imgui/src/*.cpp )
 # Indica qué archivos hay que compilar para generar el ejecutable
 add_executable( ${PROJECT_NAME} ${MY_FILES}
                                 ${GLAD_FILES}
-                                ${IMGUI_FILES}
-        Listener.h
-        GUI.cpp
-        GUI.h)
+                                ${IMGUI_FILES} )
 
 # Indica directorios (adicionales a los por defecto) para buscar includes
 target_include_directories( ${PROJECT_NAME} PUBLIC 

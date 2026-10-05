@@ -33,6 +33,7 @@ namespace PAG {
 
         void addListener(Listener* listener);
         void warnListeners();
+        void pedirDatos();
 
         void anadirMensaje(const std::string& mensaje);
     };

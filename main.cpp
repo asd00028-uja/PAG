@@ -59,8 +59,6 @@ else if ( action == GLFW_RELEASE )
 }
 }
 
-float colorActual[4] = {0.6f, 0.6f, 0.6f, 1.0f};
-
 // - Esta función callback será llamada cada vez que se mueva la rueda
 // del ratón sobre el área de dibujo OpenGL.
 void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
@@ -68,6 +66,9 @@ void scroll_callback ( GLFWwindow *window, double xoffset, double yoffset )
     PAG::GUI::getInstancia().anadirMensaje("Movida la rueda del ratón " + std::to_string(xoffset)
               + " Unidades en horizontal y " + std::to_string(yoffset)
               + " unidades en vertical");
+
+    const float* colorRenderer = PAG::Renderer::getInstancia().getColorFondo();
+    float colorActual[4] = {colorRenderer[0], colorRenderer[1], colorRenderer[2], colorRenderer[3]};
 
     // Cambiamos un canal aleatorio entre los 3 primeros (rgb)
     int canal = rand() % 3;
@@ -146,7 +147,7 @@ int main()
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
     try {
-        PAG::Renderer::getInstancia().creaShaderProgram("../pag03");
+        PAG::Renderer::getInstancia().creaShaderProgram("../pag04");
         PAG::Renderer::getInstancia().creaModelo();
     } catch (const std::exception& e) {
         PAG::GUI::getInstancia().anadirMensaje(e.what());

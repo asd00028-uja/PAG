@@ -54,7 +54,14 @@ namespace PAG {
     /* Despierta un listener */
     void GUI::warnListeners() {
         for (size_t i = 0; i < listeners.size(); i++) {
-            listeners[i]->wakeUp(WindowType::Background, colorFondo);
+            listeners[i]->wakeUp(true, WindowType::Background, colorFondo);
+        }
+    }
+
+    /* Pide a los listeners los datos actuales para mostrarlos en la interfaz */
+    void GUI::pedirDatos() {
+        for (size_t i = 0; i < listeners.size(); i++) {
+            listeners[i]->wakeUp(false, WindowType::Background, colorFondo);
         }
     }
 
@@ -71,6 +78,7 @@ namespace PAG {
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Once);
         if (ImGui::Begin("Color de Fondo")) {
             ImGui::SetWindowFontScale(1.0f);
+            pedirDatos();
             if (ImGui::ColorEdit3("Seleccionar color", colorFondo)) {
                 warnListeners();
             }

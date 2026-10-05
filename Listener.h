@@ -21,7 +21,11 @@ namespace PAG {
         Listener() = default;
         virtual ~Listener() = default;
 
-        virtual void wakeUp(WindowType t, ...) = 0;
+        /**
+         * @param enviar true: la interfaz envía datos al listener.
+         *               false: la interfaz pide datos al listener (este los escribe en los argumentos).
+         */
+        virtual void wakeUp(bool enviar, WindowType t, ...) = 0;
     };
 
 }

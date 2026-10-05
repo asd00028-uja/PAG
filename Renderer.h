@@ -35,8 +35,9 @@ namespace PAG {
         void inicializar();
         void cambiarTamano(int ancho, int alto);
         void setColorFondo(float r, float g, float b, float a = 1.0f);
+        const float* getColorFondo() const;
 
-        void wakeUp(WindowType t, ...) override;
+        void wakeUp(bool enviar, WindowType t, ...) override;
 
         void creaShaderProgram(std::string nombre);
         void creaModelo();

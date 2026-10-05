@@ -88,14 +88,26 @@ namespace PAG {
         glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
     }
 
-    void Renderer::wakeUp(WindowType t, ...) {
+    const float* Renderer::getColorFondo() const {
+        return colorFondo;
+    }
+
+    void Renderer::wakeUp(bool enviar, WindowType t, ...) {
         switch (t) {
             case WindowType::Background: {
                 std::va_list args;
                 va_start(args, t);
-                float* nuevoColor = va_arg(args, float*);
-                setColorFondo(nuevoColor[0], nuevoColor[1], nuevoColor[2], 1.0f);
+                float* color = va_arg(args, float*);
                 va_end(args);
+                if (enviar) {
+                    // La interfaz nos manda el color
+                    setColorFondo(color[0], color[1], color[2], 1.0f);
+                } else {
+                    // La interfaz nos pide el color
+                    color[0] = colorFondo[0];
+                    color[1] = colorFondo[1];
+                    color[2] = colorFondo[2];
+                }
                 break;
             }
             default:
