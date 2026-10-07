@@ -18,6 +18,7 @@ namespace PAG {
         static GUI* instancia;
 
         std::vector<Listener*> listeners;
+        char nombreShader[128] = "";
 
         float colorFondo[3];
         std::vector<std::string> mensajes;

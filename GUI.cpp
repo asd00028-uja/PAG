@@ -4,6 +4,8 @@
 
 #include "GUI.h"
 
+#include <stdexcept>
+
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
@@ -92,6 +94,25 @@ namespace PAG {
                 ImGui::TextUnformatted(mensajes[i].c_str());
             }
         }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(10, 300), ImGuiCond_Once);
+        if (ImGui::Begin("Shader Program")) {
+            ImGui::InputText("##nombre", nombreShader, sizeof(nombreShader),
+                             ImGuiInputTextFlags_AutoSelectAll);
+            ImGui::SameLine();
+            if (ImGui::Button("Cargar")) {
+                for (size_t i = 0; i < listeners.size(); i++) {
+                    try {
+                        listeners[i]->wakeUp(true, WindowType::ShaderProgram, nombreShader);
+                        anadirMensaje(std::string("Shader program cargado: ") + nombreShader);
+                    } catch (const std::exception& e) {
+                        anadirMensaje(e.what());
+                    }
+                }
+            }
+        }
+
         ImGui::End();
 
         ImGui::Render();

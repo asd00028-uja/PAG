@@ -10,7 +10,8 @@ namespace PAG {
 
     enum class WindowType {
         Background,
-        Messages
+        Messages,
+        ShaderProgram
     };
 
     /**

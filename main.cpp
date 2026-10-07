@@ -146,12 +146,7 @@ int main()
     PAG::GUI::getInstancia().inicializar(window);
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
-    try {
-        PAG::Renderer::getInstancia().creaShaderProgram("../pag04");
-        PAG::Renderer::getInstancia().creaModelo();
-    } catch (const std::exception& e) {
-        PAG::GUI::getInstancia().anadirMensaje(e.what());
-    }
+    PAG::Renderer::getInstancia().creaModelo();
 
     PAG::GUI::getInstancia().anadirMensaje("Starting Application PAG - Prueba 01");
     // - Ciclo de eventos de la aplicación. La condición de parada es que la

@@ -17,3 +17,42 @@ Se han añadido atributos a Renderer para poder gestionar shaders, que se cargan
 Los shaders dibujan un triángulo, en el que cada uno de los vertices usa un color distinto (un solo VBO entrelazado, aunque también está la no entrelazada)
 
 Al redimensionar la ventana el triángulo también se redimensiona el triángulo por que los vertices se dibujan respecto al viewport. Al cambiar el tamaño de la ventana se llama a `PAG::Renderer::getInstancia().cambiarTamano(width, height);` que cambia el viewport, haciendo que los vertices se dibujen respecto al viewport nuevo.
+
+## Cambios en la práctica 4
+
+He creado dos clases nuevas para desacoplar los shaders: `Shader` y `ShaderProgram`, la idea es que
+renderer tiene un puntero de `ShaderProgram`, y cuando se construye con el nombre, crea los vertex y fragment shaders.
+
+La GUI tiene una ventana en el que se le pasa el nombre del shader, al darle al boton carga los shaders.
+
+```plantuml
+@startuml
+class Renderer {
+  -ShaderProgram* shaderProgram
+  +creaShaderProgram(nombre)
+  +creaModelo()
+  +refrescar()
+}
+class ShaderProgram {
+  -GLuint id
+  +ShaderProgram(nombre)
+  +usar()
+  +getId()
+}
+class Shader {
+  -GLuint id
+  +Shader(tipo, fichero)
+  +getId()
+}
+class GUI {
+  -char nombreShader[128]
+}
+interface Listener {
+  +wakeUp(enviar, t, ...)
+}
+Renderer ..|> Listener
+GUI o-- Listener
+Renderer *-- "0..1" ShaderProgram
+ShaderProgram ..> Shader : crea
+@enduml
+```

@@ -103,6 +103,18 @@ namespace PAG {
                 }
                 break;
             }
+            case WindowType::ShaderProgram: {
+                std::va_list args;
+                va_start(args, t);
+                const char* nombre = va_arg(args, const char*);
+                va_end(args);
+                if (enviar) {
+                    // La interfaz nos manda el nombre base de los shaders
+                    // Si falla, la excepción llega hasta la interfaz
+                    creaShaderProgram(nombre);
+                }
+                break;
+            }
             default:
                 break;
         }
