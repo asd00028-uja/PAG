@@ -25,34 +25,35 @@ renderer tiene un puntero de `ShaderProgram`, y cuando se construye con el nombr
 
 La GUI tiene una ventana en el que se le pasa el nombre del shader, al darle al boton carga los shaders.
 
-```plantuml
-@startuml
-class Renderer {
-  -ShaderProgram* shaderProgram
-  +creaShaderProgram(nombre)
-  +creaModelo()
-  +refrescar()
-}
-class ShaderProgram {
-  -GLuint id
-  +ShaderProgram(nombre)
-  +usar()
-  +getId()
-}
-class Shader {
-  -GLuint id
-  +Shader(tipo, fichero)
-  +getId()
-}
-class GUI {
-  -char nombreShader[128]
-}
-interface Listener {
-  +wakeUp(enviar, t, ...)
-}
-Renderer ..|> Listener
-GUI o-- Listener
-Renderer *-- "0..1" ShaderProgram
-ShaderProgram ..> Shader : crea
-@enduml
+```mermaid
+classDiagram
+    class Listener {
+        <<interface>>
+        +wakeUp(enviar, t, ...)
+    }
+    class Renderer {
+        -ShaderProgram* shaderProgram
+        +creaShaderProgram(nombre)
+        +creaModelo()
+        +refrescar()
+    }
+    class ShaderProgram {
+        -GLuint id
+        +ShaderProgram(nombre)
+        +usar()
+        +getId()
+    }
+    class Shader {
+        -GLuint id
+        +Shader(tipo, fichero)
+        +getId()
+    }
+    class GUI {
+        -char nombreShader[128]
+        +anadirMensaje(mensaje)
+    }
+    Listener <|.. Renderer
+    GUI o-- Listener
+    Renderer *-- ShaderProgram
+    ShaderProgram ..> Shader : crea
 ```
