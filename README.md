@@ -57,3 +57,10 @@ classDiagram
     Renderer *-- ShaderProgram
     ShaderProgram ..> Shader : crea
 ```
+
+## Cambios en la práctica 5
+Para controlar la cámara de manera encapsulada, he creado la clase Camara, que guarda todos los atributos y metodos necesarios para operarla.
+El renderer guarda un atributo de tipo camara para que el renderer lo pueda operar.
+Se ha creado en la GUI una ventana de ImGui para controlar la camara como se pide. También se puede controlar con el ratón, guardando información de la posición del ratón cuando se está haciendo click, el movimiento depende del tipo de movimiento que esté seleccionado en la GUI.
+
+Para poder usar la aplicación, simplemente se ejecuta, se carga el nombre del shader (../pag05) y debería aparecer el triangulo. Para interactuar con la cámara se hace mediante la ventana de ImGui.
