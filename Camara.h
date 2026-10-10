@@ -22,12 +22,20 @@ namespace PAG {
         int alto = 576;
 
         void calcularUVN(glm::vec3& u, glm::vec3& v, glm::vec3& n) const;
+        static glm::vec3 rotar(const glm::vec3& dir, float grados, const glm::vec3& eje);
 
     public:
         glm::mat4 getVision() const;
         glm::mat4 getProyeccion() const;
         void setTamano(int ancho, int alto);
         float getFovX() const { return fovX; }
+
+        void zoom(float grados);
+        void pan(float grados);                    // positivo = derecha
+        void tilt(float grados);                   // positivo = arriba
+        void dolly(float dx, float dz);            // en los ejes X y Z de la escena
+        void crane(float dy);                      // positivo = arriba
+        void orbit(float longitud, float latitud); // positivos = este / norte
     };
 
 }
