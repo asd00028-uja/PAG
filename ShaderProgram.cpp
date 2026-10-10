@@ -6,6 +6,7 @@
 #include "Shader.h"
 
 #include <stdexcept>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace PAG {
 
@@ -49,6 +50,17 @@ namespace PAG {
 
     void ShaderProgram::usar() const {
         glUseProgram(id);
+    }
+
+    /**
+     * Asigna una matriz a un uniform del shader program
+     */
+    void ShaderProgram::setUniform(const std::string& nombre, const glm::mat4& valor) const {
+        GLint ubicacion = glGetUniformLocation(id, nombre.c_str());
+        if (ubicacion == -1) {
+            throw std::runtime_error("El shader program no tiene el uniform " + nombre);
+        }
+        glUniformMatrix4fv(ubicacion, 1, GL_FALSE, glm::value_ptr(valor));
     }
 
 }
