@@ -10,6 +10,7 @@
 #include <string>
 #include <GLFW/glfw3.h>
 #include "Listener.h"
+#include "Camara.h"
 
 namespace PAG {
 
@@ -23,7 +24,11 @@ namespace PAG {
         float colorFondo[3];
         std::vector<std::string> mensajes;
 
+        TipoMovimiento tipoMovimiento = TipoMovimiento::Zoom;
+        float anguloZoom = 40.0f;
+
         GUI();
+        void moverCamara(float a, float b = 0.0f);
 
     public:
         virtual ~GUI();
@@ -37,6 +42,8 @@ namespace PAG {
         void pedirDatos();
 
         void anadirMensaje(const std::string& mensaje);
+
+        TipoMovimiento getTipoMovimiento() const { return tipoMovimiento; }
     };
 
 }

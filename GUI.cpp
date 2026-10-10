@@ -67,6 +67,13 @@ namespace PAG {
         }
     }
 
+    /* Pide a los listeners que muevan la cámara con el movimiento seleccionado */
+    void GUI::moverCamara(float a, float b) {
+        for (size_t i = 0; i < listeners.size(); i++) {
+            listeners[i]->wakeUp(true, WindowType::Camera, static_cast<int>(tipoMovimiento), a, b);
+        }
+    }
+
     /* Añade un mensaje a la ventana de mensajes */
     void GUI::anadirMensaje(const std::string& mensaje) {
         mensajes.push_back(mensaje);
@@ -113,6 +120,70 @@ namespace PAG {
             }
         }
 
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(10, 400), ImGuiCond_Once);
+        if (ImGui::Begin("Camera")) {
+            const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };
+            int actual = static_cast<int>(tipoMovimiento);
+            ImGui::Text("Movement");
+            if (ImGui::Combo("##movimiento", &actual, movimientos, IM_ARRAYSIZE(movimientos))) {
+                tipoMovimiento = static_cast<TipoMovimiento>(actual);
+            }
+
+            const float grados = 5.0f; // Grados que se mueve
+            const float distancia = 0.1f;
+            switch (tipoMovimiento) {
+                case TipoMovimiento::Zoom: {
+                    // Pedimos el ángulo actual (el ratón también puede cambiarlo)
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(false, WindowType::Camera, &anguloZoom);
+                    }
+                    float anterior = anguloZoom;
+                    if (ImGui::SliderFloat("Angle", &anguloZoom, 10.0f, 120.0f)) {
+                        moverCamara(anguloZoom - anterior);
+                    }
+                    break;
+                }
+                case TipoMovimiento::Pan:
+                    ImGui::Text("Direction");
+                    if (ImGui::Button("<- Left")) moverCamara(-grados);
+                    ImGui::SameLine();
+                    if (ImGui::Button("Right ->")) moverCamara(grados);
+                    break;
+                case TipoMovimiento::Tilt:
+                    ImGui::Text("Direction");
+                    if (ImGui::Button("^ Up ^")) moverCamara(grados);
+                    ImGui::SameLine();
+                    if (ImGui::Button("v Down v")) moverCamara(-grados);
+                    break;
+                case TipoMovimiento::Dolly:
+                    // Ejes de la escena: hacia el triángulo es -Z
+                    ImGui::Text("Direction");
+                    if (ImGui::Button("^ Forward ^")) moverCamara(0.0f, -distancia);
+                    if (ImGui::Button("<- Left")) moverCamara(-distancia, 0.0f);
+                    ImGui::SameLine();
+                    if (ImGui::Button("Right ->")) moverCamara(distancia, 0.0f);
+                    if (ImGui::Button("v Back v")) moverCamara(0.0f, distancia);
+                    break;
+                case TipoMovimiento::Crane:
+                    ImGui::Text("Direction");
+                    if (ImGui::Button("^ Up ^")) moverCamara(distancia);
+                    ImGui::SameLine();
+                    if (ImGui::Button("v Down v")) moverCamara(-distancia);
+                    break;
+                case TipoMovimiento::Orbit:
+                    ImGui::Text("Latitude");
+                    if (ImGui::Button("^ North ^")) moverCamara(0.0f, grados);
+                    ImGui::SameLine();
+                    if (ImGui::Button("v South v")) moverCamara(0.0f, -grados);
+                    ImGui::Text("Longitude");
+                    if (ImGui::Button("<- West")) moverCamara(-grados, 0.0f);
+                    ImGui::SameLine();
+                    if (ImGui::Button("East ->")) moverCamara(grados, 0.0f);
+                    break;
+            }
+        }
         ImGui::End();
 
         ImGui::Render();

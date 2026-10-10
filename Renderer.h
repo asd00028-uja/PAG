@@ -41,6 +41,7 @@ namespace PAG {
 
         void wakeUp(bool enviar, WindowType t, ...) override;
 
+        void moverCamara(TipoMovimiento tipo, float a, float b = 0.0f);
         void creaShaderProgram(const std::string& nombre);
         void creaModelo();
     };

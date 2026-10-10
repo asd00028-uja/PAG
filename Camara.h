@@ -15,7 +15,7 @@ namespace PAG {
         glm::vec3 posicion {0.0f, 0.0f, 3.0f};
         glm::vec3 puntoMira {0.0f, 0.0f, 0.0f};
         glm::vec3 arriba {0.0f, 1.0f, 0.0f};
-        float fovX = 60.0f; // Ángulo de visión horizontal, en grados
+        float fovX = 40.0f; // Ángulo de visión horizontal, en grados
         float zNear = 0.1f;
         float zFar = 100.0f;
         int ancho = 1024;

@@ -118,8 +118,40 @@ namespace PAG {
                 }
                 break;
             }
+            case WindowType::Camera: {
+                std::va_list args;
+                va_start(args, t);
+                if (enviar) {
+                    TipoMovimiento tipo = static_cast<TipoMovimiento>(va_arg(args, int));
+                    float a = static_cast<float>(va_arg(args, double));
+                    float b = static_cast<float>(va_arg(args, double));
+                    moverCamara(tipo, a, b);
+                } else {
+                    // La interfaz nos pide el ángulo de visión actual
+                    float* fov = va_arg(args, float*);
+                    *fov = camara.getFovX();
+                }
+                va_end(args);
+                break;
+            }
             default:
                 break;
+        }
+    }
+
+    /**
+     * Aplica un movimiento a la cámara
+     * @param a Primer parámetro del movimiento (ángulo, distancia o longitud)
+     * @param b Segundo parámetro, solo para dolly (dz) y orbit (latitud)
+     */
+    void Renderer::moverCamara(TipoMovimiento tipo, float a, float b) {
+        switch (tipo) {
+            case TipoMovimiento::Zoom:  camara.zoom(a); break;
+            case TipoMovimiento::Pan:   camara.pan(a); break;
+            case TipoMovimiento::Tilt:  camara.tilt(a); break;
+            case TipoMovimiento::Dolly: camara.dolly(a, b); break;
+            case TipoMovimiento::Crane: camara.crane(a); break;
+            case TipoMovimiento::Orbit: camara.orbit(a, b); break;
         }
     }
 
