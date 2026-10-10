@@ -57,6 +57,8 @@ namespace PAG {
         glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
         if ( shaderProgram && idVAO != 0 ) {
             shaderProgram->usar();
+            shaderProgram->setUniform("mModelViewProj",
+                                      camara.getProyeccion() * camara.getVision());
             glBindVertexArray ( idVAO );
             glBindBuffer ( GL_ELEMENT_ARRAY_BUFFER, idIBO );
             glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr );
@@ -71,6 +73,7 @@ namespace PAG {
 
     void Renderer::cambiarTamano(int ancho, int alto) {
         glViewport(0, 0, ancho, alto);
+        camara.setTamano(ancho, alto);
     }
 
     void Renderer::setColorFondo(float r, float g, float b, float a) {

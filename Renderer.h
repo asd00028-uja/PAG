@@ -8,6 +8,7 @@
 #include <string>
 #include "Listener.h"
 #include "ShaderProgram.h"
+#include "Camara.h"
 
 // Dentro de el espacio de nombres PAG
 namespace PAG {
@@ -20,6 +21,7 @@ namespace PAG {
 
         // Identificadores temporales de los shaders y objectos
         ShaderProgram* shaderProgram = nullptr;
+        Camara camara;
 
         GLuint idVAO = 0; // Identificador del vertex array object
         GLuint idVBO = 0; // Identificador del vertex buffer object
