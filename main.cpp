@@ -42,21 +42,54 @@ void key_callback ( GLFWwindow *window, int key, int scancode, int action, int m
 { if ( key == GLFW_KEY_ESCAPE && action == GLFW_PRESS )
 { glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
-    PAG::GUI::getInstancia().anadirMensaje("Key callback called");
+    //PAG::GUI::getInstancia().anadirMensaje("Key callback called");
 }
+bool arrastrando = false;
+double xAnterior = 0.0, yAnterior = 0.0;
+
 // - Esta función callback será llamada cada vez que se pulse algún botón
 // del ratón sobre el área de dibujo OpenGL.
 void mouse_button_callback ( GLFWwindow *window, int button, int action, int mods )
 { if ( action == GLFW_PRESS )
-{ PAG::GUI::getInstancia().anadirMensaje("Pulsado el botón: " + std::to_string(button));
+{ //PAG::GUI::getInstancia().anadirMensaje("Pulsado el botón: " + std::to_string(button));
     ImGuiIO& io = ImGui::GetIO ();
     io.AddMouseButtonEvent ( button, true );
 }
 else if ( action == GLFW_RELEASE )
-{ PAG::GUI::getInstancia().anadirMensaje("Soltado el botón: " + std::to_string(button));
+{ //PAG::GUI::getInstancia().anadirMensaje("Soltado el botón: " + std::to_string(button));
     ImGuiIO& io = ImGui::GetIO ();
     io.AddMouseButtonEvent ( button, false );
 }
+
+    if ( button == GLFW_MOUSE_BUTTON_LEFT ) {
+        if ( action == GLFW_PRESS && !ImGui::GetIO().WantCaptureMouse ) {
+            arrastrando = true;
+            glfwGetCursorPos ( window, &xAnterior, &yAnterior );
+        } else if ( action == GLFW_RELEASE ) {
+            arrastrando = false;
+        }
+    }
+}
+
+void cursor_pos_callback ( GLFWwindow *window, double xpos, double ypos )
+{ if ( !arrastrando )
+    { return;
+    }
+    float dx = static_cast<float>( xpos - xAnterior );
+    float dy = static_cast<float>( ypos - yAnterior );
+    xAnterior = xpos;
+    yAnterior = ypos;
+
+    PAG::TipoMovimiento tipo = PAG::GUI::getInstancia().getTipoMovimiento();
+    PAG::Renderer& renderer = PAG::Renderer::getInstancia();
+    switch ( tipo )
+    { case PAG::TipoMovimiento::Zoom:  renderer.moverCamara(tipo, dy * 0.1f); break;
+        case PAG::TipoMovimiento::Pan:   renderer.moverCamara(tipo, dx * 0.1f); break;
+        case PAG::TipoMovimiento::Tilt:  renderer.moverCamara(tipo, -dy * 0.1f); break;
+        case PAG::TipoMovimiento::Dolly: renderer.moverCamara(tipo, dx * 0.01f, dy * 0.01f); break;
+        case PAG::TipoMovimiento::Crane: renderer.moverCamara(tipo, -dy * 0.01f); break;
+        case PAG::TipoMovimiento::Orbit: renderer.moverCamara(tipo, -dx * 0.3f, dy * 0.3f); break;
+    }
 }
 
 // - Esta función callback será llamada cada vez que se mueva la rueda
@@ -141,6 +174,7 @@ int main()
     glfwSetKeyCallback ( window, key_callback );
     glfwSetMouseButtonCallback ( window, mouse_button_callback );
     glfwSetScrollCallback ( window, scroll_callback );
+    glfwSetCursorPosCallback ( window, cursor_pos_callback );
 
     PAG::Renderer::getInstancia().inicializar();
     PAG::GUI::getInstancia().inicializar(window);
