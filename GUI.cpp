@@ -85,7 +85,7 @@ namespace PAG {
         ImGui::NewFrame();
 
         ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_Once);
-        if (ImGui::Begin("Color de Fondo")) {
+        if (ImGui::Begin("Color de Fondo", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::SetWindowFontScale(1.0f);
             pedirDatos();
             if (ImGui::ColorEdit3("Seleccionar color", colorFondo)) {
@@ -95,7 +95,7 @@ namespace PAG {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(10, 100), ImGuiCond_Once);
-        if (ImGui::Begin("Mensajes")) {
+        if (ImGui::Begin("Mensajes", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::SetWindowFontScale(1.0f);
             for (size_t i = 0; i < mensajes.size(); i++) {
                 ImGui::TextUnformatted(mensajes[i].c_str());
@@ -104,7 +104,7 @@ namespace PAG {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(10, 300), ImGuiCond_Once);
-        if (ImGui::Begin("Shader Program")) {
+        if (ImGui::Begin("Shader Program", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             ImGui::InputText("##nombre", nombreShader, sizeof(nombreShader),
                              ImGuiInputTextFlags_AutoSelectAll);
             ImGui::SameLine();
@@ -123,7 +123,7 @@ namespace PAG {
         ImGui::End();
 
         ImGui::SetNextWindowPos(ImVec2(10, 400), ImGuiCond_Once);
-        if (ImGui::Begin("Camera")) {
+        if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };
             int actual = static_cast<int>(tipoMovimiento);
             ImGui::Text("Movement");
