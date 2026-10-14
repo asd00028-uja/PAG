@@ -131,6 +131,7 @@ int main()
 
     // - Este callback hay que registrarlo ANTES de llamar a glfwInit
     glfwSetErrorCallback ( (GLFWerrorfun) error_callback );
+    glfwInitHint(GLFW_PLATFORM, GLFW_PLATFORM_X11);
 
     // - Inicializa GLFW. Es un proceso que sólo debe realizarse una vez en la aplicación
     if ( glfwInit () != GLFW_TRUE )
