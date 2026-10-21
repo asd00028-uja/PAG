@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 3.27)
-project(pr05)
+project(pr06)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package( glm REQUIRED )
+find_package( assimp REQUIRED )
 
 # Define variables agrupando nombres de archivo
 file( GLOB MY_FILES *.cpp )
@@ -20,4 +21,4 @@ target_include_directories( ${PROJECT_NAME} PUBLIC
     imgui/include )
 
 # Indica bibliotecas a enlazar en el ejecutable
-target_link_libraries( ${PROJECT_NAME} GL glfw glm::glm )
+target_link_libraries( ${PROJECT_NAME} GL glfw glm::glm assimp::assimp )
