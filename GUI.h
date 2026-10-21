@@ -9,6 +9,8 @@
 #include <vector>
 #include <string>
 #include <GLFW/glfw3.h>
+#include "imgui.h"
+#include "imfilebrowser.h"
 #include "Listener.h"
 #include "Camara.h"
 
@@ -20,6 +22,9 @@ namespace PAG {
 
         std::vector<Listener*> listeners;
         char nombreShader[128] = "";
+        ImGui::FileBrowser navegador; // Ventana para elegir el fichero
+        std::string rutaModelo; // Ruta del fichero OBJ elegido, pendiente de cargar
+        std::string nombreModelo; // Nombre de ese fichero, para mostrarlo
 
         float colorFondo[3];
         std::vector<std::string> mensajes;

@@ -39,6 +39,9 @@ namespace PAG {
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init();
 
+        navegador.SetTitle("Cargar OBJ");
+        navegador.SetTypeFilters({ ".obj" });
+
         anadirMensaje("Dear ImGui inicializado");
     }
 
@@ -103,24 +106,39 @@ namespace PAG {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(10, 300), ImGuiCond_Once);
-        if (ImGui::Begin("Shader Program", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+        ImGui::SetNextWindowPos(ImVec2(10, 250), ImGuiCond_Once);
+        if (ImGui::Begin("File loading", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::Button("Load OBJ...")) {
+                navegador.Open();
+            }
+            if (!nombreModelo.empty()) {
+                ImGui::SameLine();
+                ImGui::TextUnformatted(nombreModelo.c_str());
+            }
+            ImGui::Text("Shader program");
             ImGui::InputText("##nombre", nombreShader, sizeof(nombreShader),
                              ImGuiInputTextFlags_AutoSelectAll);
-            ImGui::SameLine();
-            if (ImGui::Button("Cargar")) {
+            if (ImGui::Button("Load") && !rutaModelo.empty()) {
+                // La interfaz manda el OBJ elegido y el shader program escrito
                 for (size_t i = 0; i < listeners.size(); i++) {
                     try {
-                        listeners[i]->wakeUp(true, WindowType::ShaderProgram, nombreShader);
-                        anadirMensaje(std::string("Shader program cargado: ") + nombreShader);
+                        listeners[i]->wakeUp(true, WindowType::FileLoading,
+                                             rutaModelo.c_str(), nombreShader);
+                        anadirMensaje("Modelo cargado: " + rutaModelo);
                     } catch (const std::exception& e) {
                         anadirMensaje(e.what());
                     }
                 }
             }
         }
-
         ImGui::End();
+
+        navegador.Display();
+        if (navegador.HasSelected()) {
+            rutaModelo = navegador.GetSelected().string();
+            nombreModelo = navegador.GetSelected().filename().string();
+            navegador.ClearSelected();
+        }
 
         ImGui::SetNextWindowPos(ImVec2(10, 400), ImGuiCond_Once);
         if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {

@@ -181,12 +181,6 @@ int main()
     PAG::GUI::getInstancia().inicializar(window);
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
-    try {
-        PAG::Renderer::getInstancia().cargaModelo("../../Prácticas/PR06/dado.obj", "../pag05");
-    } catch ( const std::runtime_error& e ) {
-        PAG::GUI::getInstancia().anadirMensaje(e.what());
-    }
-
     PAG::GUI::getInstancia().anadirMensaje("Starting Application PAG - Prueba 01");
     // - Ciclo de eventos de la aplicación. La condición de parada es que la
     // ventana principal deba cerrarse. Por ejemplo, si el usuario pulsa el

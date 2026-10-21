@@ -11,7 +11,7 @@ namespace PAG {
     enum class WindowType {
         Background,
         Messages,
-        ShaderProgram,
+        FileLoading,
         Camera
     };
 
