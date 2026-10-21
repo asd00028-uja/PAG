@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "Listener.h"
 #include "ShaderProgram.h"
 #include "Camara.h"
@@ -21,12 +22,14 @@ namespace PAG {
         static Renderer* instancia; // Instancia, patrón singleton
         float colorFondo[4];
 
-        ShaderProgram* shaderProgram = nullptr;
+        // Shader programs cargados por nombre, el renderer es su propietario
+        std::map<std::string, ShaderProgram*> shaderPrograms;
         Camara camara;
         std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
         int contadorModelos = 0;
 
         Renderer();
+        ShaderProgram* obtenerShaderProgram(const std::string& nombre);
 
     public:
         virtual ~Renderer();
@@ -40,8 +43,7 @@ namespace PAG {
         void wakeUp(bool enviar, WindowType t, ...) override;
 
         void moverCamara(TipoMovimiento tipo, float a, float b = 0.0f);
-        void creaShaderProgram(const std::string& nombre);
-        void cargaModelo(const std::string& ruta);
+        void cargaModelo(const std::string& ruta, const std::string& nombreShader);
     };
 
 }

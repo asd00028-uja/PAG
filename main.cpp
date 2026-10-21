@@ -182,7 +182,7 @@ int main()
     PAG::GUI::getInstancia().addListener(&PAG::Renderer::getInstancia());
 
     try {
-        PAG::Renderer::getInstancia().cargaModelo("../../Prácticas/PR06/dado.obj");
+        PAG::Renderer::getInstancia().cargaModelo("../../Prácticas/PR06/dado.obj", "../pag05");
     } catch ( const std::runtime_error& e ) {
         PAG::GUI::getInstancia().anadirMensaje(e.what());
     }

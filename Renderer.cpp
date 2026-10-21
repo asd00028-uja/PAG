@@ -30,7 +30,10 @@ namespace PAG {
             delete modelo;
         }
 
-        delete shaderProgram;
+        // Delete de los punteros de los shader programs (.second es el puntero)
+        for ( auto& par : shaderPrograms ) {
+            delete par.second;
+        }
     }
 
     /**
@@ -49,14 +52,13 @@ namespace PAG {
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
-        if ( shaderProgram ) {
-            shaderProgram->usar();
-            glm::mat4 proyeccionVision = camara.getProyeccion() * camara.getVision();
-            for ( Modelo* modelo : modelos ) {
-                shaderProgram->setUniform("mModelViewProj",
-                                          proyeccionVision * modelo->getTransformacion());
-                modelo->dibujar();
-            }
+        glm::mat4 proyeccionVision = camara.getProyeccion() * camara.getVision();
+        for ( Modelo* modelo : modelos ) {
+            ShaderProgram* programa = modelo->getShaderProgram();
+            programa->usar();
+            programa->setUniform("mModelViewProj",
+                                 proyeccionVision * modelo->getTransformacion());
+            modelo->dibujar();
         }
     }
 
@@ -109,7 +111,7 @@ namespace PAG {
                 if (enviar) {
                     // La interfaz nos manda el nombre base de los shaders
                     // Si falla, la excepción llega hasta la interfaz
-                    creaShaderProgram(nombre);
+                    obtenerShaderProgram(nombre);
                 }
                 break;
             }
@@ -150,22 +152,30 @@ namespace PAG {
         }
     }
 
-     /**
-     * Método para crear, compilar y enlazar el shader program
+    /**
+     * Devuelve el shader program con ese nombre, y si todavía no está cargado
+     * lo crea, compila y enlaza
      * @throws runtime_error si falla algun shader
      */
-    void Renderer::creaShaderProgram(const std::string& nombre) {
+    ShaderProgram* Renderer::obtenerShaderProgram(const std::string& nombre) {
+        auto encontrado = shaderPrograms.find(nombre);
+        if ( encontrado != shaderPrograms.end() ) {
+            return encontrado->second;
+        }
         ShaderProgram* nuevo = new ShaderProgram(nombre);
-        delete shaderProgram;
-        shaderProgram = nuevo;
+        shaderPrograms[nombre] = nuevo;
+        return nuevo;
     }
 
     /**
      * Método para cargar un modelo desde un fichero y añadirlo a la escena
-     * @throws runtime_error si no se puede cargar el modelo
+     * @param nombreShader Nombre base del shader program con el que se dibujará
+     * @throws runtime_error si no se puede cargar el shader program o el modelo
      */
-    void Renderer::cargaModelo(const std::string& ruta) {
+    void Renderer::cargaModelo(const std::string& ruta, const std::string& nombreShader) {
+        ShaderProgram* programa = obtenerShaderProgram(nombreShader);
         Modelo* nuevo = new Modelo(ruta);
+        nuevo->setShaderProgram(programa, nombreShader);
 
         // Para que no aparezcan en el mismo sitio
         float x = 2.0f * (contadorModelos % 3);

@@ -104,6 +104,11 @@ namespace PAG {
                      indices.data(), GL_STATIC_DRAW);
     }
 
+    void Modelo::setShaderProgram(ShaderProgram* programa, const std::string& nombre) {
+        shaderProgram = programa;
+        nombreShader = nombre;
+    }
+
     void Modelo::trasladar(const glm::vec3& desplazamiento) {
         transformacion = glm::translate(transformacion, desplazamiento);
     }

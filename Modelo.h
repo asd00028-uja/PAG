@@ -10,11 +10,14 @@
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
+#include "ShaderProgram.h"
 
 namespace PAG {
 
     class Modelo {
         std::string nombre; // Nombre del fichero del que se ha cargado
+        ShaderProgram* shaderProgram = nullptr; // Shader program con el que se dibuja, no es suyo
+        std::string nombreShader; // Nombre con el que se cargó ese shader program
         std::vector<GLfloat> vertices; // Entrelazado: posición (3) y normal (3)
         std::vector<GLuint> indices;
 
@@ -37,6 +40,10 @@ namespace PAG {
         void dibujar() const;
         const std::string& getNombre() const { return nombre; }
         const glm::mat4& getTransformacion() const { return transformacion; }
+
+        void setShaderProgram(ShaderProgram* programa, const std::string& nombre);
+        ShaderProgram* getShaderProgram() const { return shaderProgram; }
+        const std::string& getNombreShader() const { return nombreShader; }
 
         void trasladar(const glm::vec3& desplazamiento);
         void rotar(float grados, const glm::vec3& eje);
