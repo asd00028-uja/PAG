@@ -6,9 +6,11 @@
 #define PR01_RENDERER_H
 
 #include <string>
+#include <vector>
 #include "Listener.h"
 #include "ShaderProgram.h"
 #include "Camara.h"
+#include "Modelo.h"
 
 // Dentro de el espacio de nombres PAG
 namespace PAG {
@@ -19,14 +21,9 @@ namespace PAG {
         static Renderer* instancia; // Instancia, patrón singleton
         float colorFondo[4];
 
-        // Identificadores temporales de los shaders y objectos
         ShaderProgram* shaderProgram = nullptr;
         Camara camara;
-
-        GLuint idVAO = 0; // Identificador del vertex array object
-        GLuint idVBO = 0; // Identificador del vertex buffer object
-        GLuint idVBOColor = 0; // Id para los colores
-        GLuint idIBO = 0; // Identificador del index buffer object
+        std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
 
         Renderer();
 
@@ -43,7 +40,7 @@ namespace PAG {
 
         void moverCamara(TipoMovimiento tipo, float a, float b = 0.0f);
         void creaShaderProgram(const std::string& nombre);
-        void creaModelo();
+        void cargaModelo(const std::string& ruta);
     };
 
 }
