@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
 #include <assimp/scene.h>
 
 namespace PAG {
@@ -21,6 +22,8 @@ namespace PAG {
         GLuint idVBO = 0; // Identificador del vertex buffer object
         GLuint idIBO = 0; // Identificador del index buffer object
 
+        glm::mat4 transformacion = glm::mat4(1.0f); // Transformación de modelado
+
         void procesarNodo(const aiNode* nodo, const aiScene* escena);
         void procesarMalla(const aiMesh* malla);
         void creaVAO();
@@ -33,6 +36,11 @@ namespace PAG {
 
         void dibujar() const;
         const std::string& getNombre() const { return nombre; }
+        const glm::mat4& getTransformacion() const { return transformacion; }
+
+        void trasladar(const glm::vec3& desplazamiento);
+        void rotar(float grados, const glm::vec3& eje);
+        void escalar(const glm::vec3& factores);
     };
 
 }

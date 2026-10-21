@@ -48,12 +48,13 @@ namespace PAG {
      */
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+        glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
         if ( shaderProgram ) {
             shaderProgram->usar();
-            shaderProgram->setUniform("mModelViewProj",
-                                      camara.getProyeccion() * camara.getVision());
+            glm::mat4 proyeccionVision = camara.getProyeccion() * camara.getVision();
             for ( Modelo* modelo : modelos ) {
+                shaderProgram->setUniform("mModelViewProj",
+                                          proyeccionVision * modelo->getTransformacion());
                 modelo->dibujar();
             }
         }
@@ -164,6 +165,14 @@ namespace PAG {
      * @throws runtime_error si no se puede cargar el modelo
      */
     void Renderer::cargaModelo(const std::string& ruta) {
-        modelos.push_back(new Modelo(ruta));
+        Modelo* nuevo = new Modelo(ruta);
+
+        // Para que no aparezcan en el mismo sitio
+        float x = 2.0f * (contadorModelos % 3);
+        float z = -2.0f * (contadorModelos / 3);
+        nuevo->trasladar(glm::vec3(x, 0.0f, z));
+        contadorModelos++;
+
+        modelos.push_back(nuevo);
     }
 }

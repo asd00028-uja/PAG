@@ -24,6 +24,7 @@ namespace PAG {
         ShaderProgram* shaderProgram = nullptr;
         Camara camara;
         std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
+        int contadorModelos = 0;
 
         Renderer();
 

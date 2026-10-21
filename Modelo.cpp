@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <stdexcept>
+#include <glm/gtc/matrix_transform.hpp>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 
@@ -101,6 +102,18 @@ namespace PAG {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idIBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint),
                      indices.data(), GL_STATIC_DRAW);
+    }
+
+    void Modelo::trasladar(const glm::vec3& desplazamiento) {
+        transformacion = glm::translate(transformacion, desplazamiento);
+    }
+
+    void Modelo::rotar(float grados, const glm::vec3& eje) {
+        transformacion = glm::rotate(transformacion, glm::radians(grados), eje);
+    }
+
+    void Modelo::escalar(const glm::vec3& factores) {
+        transformacion = glm::scale(transformacion, factores);
     }
 
     /**
