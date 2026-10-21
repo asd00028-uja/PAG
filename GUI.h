@@ -8,6 +8,7 @@
 
 #include <vector>
 #include <string>
+#include "Modelo.h" // Antes que GLFW, porque incluye glad
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 #include "imfilebrowser.h"
@@ -25,11 +26,17 @@ namespace PAG {
         ImGui::FileBrowser navegador; // Ventana para elegir el fichero
         std::string rutaModelo; // Ruta del fichero OBJ elegido, pendiente de cargar
         std::string nombreModelo; // Nombre de ese fichero, para mostrarlo
+        std::vector<std::string> nombresModelos; // Modelos de la escena, con el formato modelo/shader
+        int modeloSeleccionado = -1; // Posición del modelo seleccionado en la lista, -1 si ninguno
+
+        int objetoTransformado = 0; // Modelo elegido en la ventana Transformation
+        TipoTransformacion tipoTransformacion = TipoTransformacion::Translate;
+        float valoresTransformacion[3] = { 0.0f, 0.0f, 0.0f }; // Desplazamiento, escala o grados (el primero)
 
         float colorFondo[3];
         std::vector<std::string> mensajes;
 
-        TipoMovimiento tipoMovimiento = TipoMovimiento::Zoom;
+        TipoMovimiento tipoMovimiento = TipoMovimiento::Orbit;
         float anguloZoom = 40.0f;
 
         GUI();

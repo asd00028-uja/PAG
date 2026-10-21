@@ -106,7 +106,7 @@ namespace PAG {
         }
         ImGui::End();
 
-        ImGui::SetNextWindowPos(ImVec2(10, 250), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(10, 240), ImGuiCond_Once);
         if (ImGui::Begin("File loading", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             if (ImGui::Button("Load OBJ...")) {
                 navegador.Open();
@@ -130,6 +130,25 @@ namespace PAG {
                     }
                 }
             }
+
+            ImGui::Separator();
+            ImGui::Text("Models");
+            for (size_t i = 0; i < listeners.size(); i++) {
+                listeners[i]->wakeUp(false, WindowType::Models, &nombresModelos);
+            }
+            for (size_t i = 0; i < nombresModelos.size(); i++) {
+                ImGui::PushID(static_cast<int>(i));
+                if (ImGui::Selectable(nombresModelos[i].c_str(), modeloSeleccionado == static_cast<int>(i))) {
+                    modeloSeleccionado = static_cast<int>(i);
+                }
+                ImGui::PopID();
+            }
+            if (ImGui::Button("Delete") && modeloSeleccionado >= 0) {
+                for (size_t i = 0; i < listeners.size(); i++) {
+                    listeners[i]->wakeUp(true, WindowType::Models, modeloSeleccionado);
+                }
+                modeloSeleccionado = -1;
+            }
         }
         ImGui::End();
 
@@ -140,7 +159,60 @@ namespace PAG {
             navegador.ClearSelected();
         }
 
-        ImGui::SetNextWindowPos(ImVec2(10, 400), ImGuiCond_Once);
+        ImGui::SetNextWindowPos(ImVec2(750, 10), ImGuiCond_Once);
+        if (ImGui::Begin("Transformation", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            for (size_t i = 0; i < listeners.size(); i++) {
+                listeners[i]->wakeUp(false, WindowType::Models, &nombresModelos);
+            }
+            if (nombresModelos.empty()) {
+                ImGui::Text("No models loaded");
+            } else {
+                if (objetoTransformado >= static_cast<int>(nombresModelos.size())) {
+                    objetoTransformado = 0;
+                }
+                ImGui::Text("Select object");
+                if (ImGui::BeginCombo("##objeto", nombresModelos[objetoTransformado].c_str())) {
+                    for (size_t i = 0; i < nombresModelos.size(); i++) {
+                        ImGui::PushID(static_cast<int>(i));
+                        if (ImGui::Selectable(nombresModelos[i].c_str(), objetoTransformado == static_cast<int>(i))) {
+                            objetoTransformado = static_cast<int>(i);
+                        }
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+
+                const char* transformaciones[] = { "Translate", "RotateX", "RotateY", "RotateZ", "Scale" };
+                int actual = static_cast<int>(tipoTransformacion);
+                ImGui::Text("Select transformation");
+                if (ImGui::Combo("##transformacion", &actual, transformaciones, IM_ARRAYSIZE(transformaciones))) {
+                    tipoTransformacion = static_cast<TipoTransformacion>(actual);
+                    float inicial = (tipoTransformacion == TipoTransformacion::Scale) ? 1.0f : 0.0f;
+                    valoresTransformacion[0] = inicial;
+                    valoresTransformacion[1] = inicial;
+                    valoresTransformacion[2] = inicial;
+                }
+
+                if (tipoTransformacion == TipoTransformacion::Translate ||
+                    tipoTransformacion == TipoTransformacion::Scale) {
+                    ImGui::DragFloat3("##valores", valoresTransformacion, 0.05f);
+                } else {
+                    ImGui::DragFloat("Degrees", &valoresTransformacion[0], 0.5f);
+                }
+
+                if (ImGui::Button("Apply")) {
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(true, WindowType::Transformation, objetoTransformado,
+                                             static_cast<int>(tipoTransformacion),
+                                             valoresTransformacion[0], valoresTransformacion[1],
+                                             valoresTransformacion[2]);
+                    }
+                }
+            }
+        }
+        ImGui::End();
+
+        ImGui::SetNextWindowPos(ImVec2(750, 400), ImGuiCond_Once);
         if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };
             int actual = static_cast<int>(tipoMovimiento);

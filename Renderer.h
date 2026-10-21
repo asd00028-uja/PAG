@@ -26,7 +26,7 @@ namespace PAG {
         std::map<std::string, ShaderProgram*> shaderPrograms;
         Camara camara;
         std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
-        int contadorModelos = 0;
+        std::vector<int> casillas; // Casilla de la rejilla de cada modelo, en el mismo orden que modelos
 
         Renderer();
         ShaderProgram* obtenerShaderProgram(const std::string& nombre);
@@ -44,6 +44,8 @@ namespace PAG {
 
         void moverCamara(TipoMovimiento tipo, float a, float b = 0.0f);
         void cargaModelo(const std::string& ruta, const std::string& nombreShader);
+        void eliminaModelo(int indice);
+        void transformaModelo(int indice, TipoTransformacion tipo, float x, float y, float z);
     };
 
 }

@@ -12,6 +12,8 @@ namespace PAG {
         Background,
         Messages,
         FileLoading,
+        Models,
+        Transformation,
         Camera
     };
 

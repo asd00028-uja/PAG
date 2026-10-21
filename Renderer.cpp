@@ -5,7 +5,9 @@
 #include <GL/gl.h>
 #include "Renderer.h"
 
+#include <algorithm>
 #include <cstdarg>
+#include <filesystem>
 #include <iostream>
 #include <string>
 #include <stdexcept>
@@ -115,6 +117,39 @@ namespace PAG {
                 }
                 break;
             }
+            case WindowType::Models: {
+                std::va_list args;
+                va_start(args, t);
+                if (enviar) {
+                    // La interfaz nos manda el índice del modelo a eliminar
+                    eliminaModelo(va_arg(args, int));
+                } else {
+                    // La interfaz nos pide la lista de modelos, con el formato modelo/shader
+                    std::vector<std::string>* nombres = va_arg(args, std::vector<std::string>*);
+                    nombres->clear();
+                    for ( Modelo* modelo : modelos ) {
+                        nombres->push_back(modelo->getNombre() + "/" +
+                                std::filesystem::path(modelo->getNombreShader()).filename().string());
+                    }
+                }
+                va_end(args);
+                break;
+            }
+            case WindowType::Transformation: {
+                std::va_list args;
+                va_start(args, t);
+                if (enviar) {
+                    // La interfaz manda el modelo, la transformación y sus valores
+                    int indice = va_arg(args, int);
+                    TipoTransformacion tipo = static_cast<TipoTransformacion>(va_arg(args, int));
+                    float x = static_cast<float>(va_arg(args, double));
+                    float y = static_cast<float>(va_arg(args, double));
+                    float z = static_cast<float>(va_arg(args, double));
+                    transformaModelo(indice, tipo, x, y, z);
+                }
+                va_end(args);
+                break;
+            }
             case WindowType::Camera: {
                 std::va_list args;
                 va_start(args, t);
@@ -177,12 +212,42 @@ namespace PAG {
         Modelo* nuevo = new Modelo(ruta);
         nuevo->setShaderProgram(programa, nombreShader);
 
-        // Para que no aparezcan en el mismo sitio
-        float x = 2.0f * (contadorModelos % 3);
-        float z = -2.0f * (contadorModelos / 3);
+        // Para que no aparezcan en el mismo sitio: primera casilla de la rejilla libre
+        int casilla = 0;
+        while ( std::find(casillas.begin(), casillas.end(), casilla) != casillas.end() ) {
+            casilla++;
+        }
+        float x = 2.0f * (casilla % 3);
+        float z = -2.0f * (casilla / 3);
         nuevo->trasladar(glm::vec3(x, 0.0f, z));
-        contadorModelos++;
 
         modelos.push_back(nuevo);
+        casillas.push_back(casilla);
+    }
+
+    /**
+     * Método para eliminar un modelo de la escena y liberar sus buffers
+     * @param indice Posición del modelo en la lista de modelos
+     */
+    void Renderer::eliminaModelo(int indice) {
+        delete modelos[indice];
+        modelos.erase(modelos.begin() + indice);
+        casillas.erase(casillas.begin() + indice);
+    }
+
+    /**
+     * Aplica una transformación de modelado a un modelo, en sus propios ejes
+     * @param indice Posición del modelo en la lista de modelos
+     * @param x, y, z Desplazamiento o factores de escala; en las rotaciones, x son los grados
+     */
+    void Renderer::transformaModelo(int indice, TipoTransformacion tipo, float x, float y, float z) {
+        Modelo* modelo = modelos[indice];
+        switch (tipo) {
+            case TipoTransformacion::Translate: modelo->trasladar(glm::vec3(x, y, z)); break;
+            case TipoTransformacion::RotateX:   modelo->rotar(x, glm::vec3(1.0f, 0.0f, 0.0f)); break;
+            case TipoTransformacion::RotateY:   modelo->rotar(x, glm::vec3(0.0f, 1.0f, 0.0f)); break;
+            case TipoTransformacion::RotateZ:   modelo->rotar(x, glm::vec3(0.0f, 0.0f, 1.0f)); break;
+            case TipoTransformacion::Scale:     modelo->escalar(glm::vec3(x, y, z)); break;
+        }
     }
 }

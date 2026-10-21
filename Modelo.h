@@ -14,6 +14,8 @@
 
 namespace PAG {
 
+    enum class TipoTransformacion { Translate, RotateX, RotateY, RotateZ, Scale };
+
     class Modelo {
         std::string nombre; // Nombre del fichero del que se ha cargado
         ShaderProgram* shaderProgram = nullptr; // Shader program con el que se dibuja, no es suyo
