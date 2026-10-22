@@ -195,6 +195,9 @@ int main()
     // - Una vez terminado el ciclo de eventos, liberar recursos, etc.
     std::cout << "Finishing application pag prueba" << std::endl;
     PAG::GUI::getInstancia().finalizar();
+
+    PAG::Renderer::liberarInstancia();
+    PAG::GUI::liberarInstancia();
     glfwDestroyWindow ( window ); // - Cerramos y destruimos la ventana de la aplicación.
     window = nullptr;
     glfwTerminate (); // - Liberamos los recursos que ocupaba GLFW.

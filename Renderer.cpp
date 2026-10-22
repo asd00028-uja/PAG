@@ -49,6 +49,15 @@ namespace PAG {
     }
 
     /**
+     * Método que destruye la instancia del Renderer, liberando los modelos y
+     * los shader programs. Hay que llamarlo con el contexto OpenGL todavía activo
+     */
+    void Renderer::liberarInstancia() {
+        delete instancia;
+        instancia = nullptr;
+    }
+
+    /**
      * Método para refrescar
      */
     void Renderer::refrescar () {

@@ -45,6 +45,7 @@ namespace PAG {
     public:
         virtual ~GUI();
         static GUI& getInstancia();
+        static void liberarInstancia();
         void inicializar(GLFWwindow* window);
         void render();
         void finalizar();

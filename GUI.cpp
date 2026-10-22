@@ -29,6 +29,12 @@ namespace PAG {
         return *instancia;
     }
 
+    /* Destruye la instancia de la GUI */
+    void GUI::liberarInstancia() {
+        delete instancia;
+        instancia = nullptr;
+    }
+
     /* Inicializa Dear ImGui */
     void GUI::inicializar(GLFWwindow* window) {
         IMGUI_CHECKVERSION();

@@ -34,6 +34,7 @@ namespace PAG {
     public:
         virtual ~Renderer();
         static Renderer& getInstancia();
+        static void liberarInstancia();
         void refrescar();
         void inicializar();
         void cambiarTamano(int ancho, int alto);
