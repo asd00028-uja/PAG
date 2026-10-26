@@ -64,3 +64,55 @@ El renderer guarda un atributo de tipo camara para que el renderer lo pueda oper
 Se ha creado en la GUI una ventana de ImGui para controlar la camara como se pide. También se puede controlar con el ratón, guardando información de la posición del ratón cuando se está haciendo click, el movimiento depende del tipo de movimiento que esté seleccionado en la GUI.
 
 Para poder usar la aplicación, simplemente se ejecuta, se carga el nombre del shader (../pag05) y debería aparecer el triangulo. Para interactuar con la cámara se hace mediante la ventana de ImGui.
+
+## Cambios en la práctica 6
+Se ha creado la clase `Modelo`, que carga un fichero OBJ con Assimp. La normal entra al shader por la location 1 y se lee como si fuera el color.
+
+El `Renderer` tiene ahora un `vector<Modelo*>` y es su propietario, así que se pueden tener varios modelos a la vez.  Cada modelo tiene su propio shader program. El `Renderer` guarda un `map<string, ShaderProgram*>`.
+
+La GUI tiene dos ventanas nuevas:
+- **File loading**: Usa `imfilebrowser.h` para elegir el fichero .obj para cargar, campo para el shader program. Tambien se puede borrar los objetos cargados.
+- **Transformation**: se elige el objeto, el tipo de transformación (Translate, RotateX, RotateY, RotateZ, Scale), los valores y se aplica con "Apply".
+
+```mermaid
+classDiagram
+    class Listener {
+        <<interface>>
+        +wakeUp(enviar, t, ...)
+    }
+    class Renderer {
+        -map~string, ShaderProgram*~ shaderPrograms
+        -vector~Modelo*~ modelos
+        -Camara camara
+        +cargaModelo(ruta, nombreShader)
+        +eliminaModelo(indice)
+        +transformaModelo(indice, tipo, x, y, z)
+        +refrescar()
+    }
+    class Modelo {
+        -vector~GLfloat~ vertices
+        -vector~GLuint~ indices
+        -mat4 transformacion
+        -ShaderProgram* shaderProgram
+        +Modelo(ruta)
+        +dibujar()
+        +trasladar(v)
+        +rotar(grados, eje)
+        +escalar(v)
+    }
+    class ShaderProgram {
+        -GLuint id
+        +usar()
+    }
+    class Camara
+    class GUI {
+        -FileBrowser navegador
+        +anadirMensaje(mensaje)
+    }
+    Listener <|.. Renderer
+    GUI o-- Listener
+    Renderer *-- Modelo
+    Renderer *-- ShaderProgram
+    Renderer *-- Camara
+    Modelo --> ShaderProgram : usa
+```

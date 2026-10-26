@@ -10,8 +10,6 @@ out/
 *.iml
 
 # Archivos objeto y ejecutables
-*.o
-*.obj
 *.exe
 pr01
 PAG_Practica1
