@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 #include <assimp/scene.h>
 #include "ShaderProgram.h"
+#include "Material.h"
 
 namespace PAG {
 
@@ -20,6 +21,8 @@ namespace PAG {
         std::string nombre; // Nombre del fichero del que se ha cargado
         ShaderProgram* shaderProgram = nullptr; // Shader program con el que se dibuja, no es suyo
         std::string nombreShader; // Nombre con el que se cargó ese shader program
+        Material* material = nullptr; // Material con el que se dibuja, no es suyo
+        std::string nombreMaterial; // Nombre con el que está guardado ese material
         std::vector<GLfloat> vertices; // Entrelazado: posición (3) y normal (3)
         std::vector<GLuint> indices;
 
@@ -46,6 +49,10 @@ namespace PAG {
         void setShaderProgram(ShaderProgram* programa, const std::string& nombre);
         ShaderProgram* getShaderProgram() const { return shaderProgram; }
         const std::string& getNombreShader() const { return nombreShader; }
+
+        void setMaterial(Material* nuevoMaterial, const std::string& nombre);
+        Material* getMaterial() const { return material; }
+        const std::string& getNombreMaterial() const { return nombreMaterial; }
 
         void trasladar(const glm::vec3& desplazamiento);
         void rotar(float grados, const glm::vec3& eje);

@@ -24,6 +24,8 @@ namespace PAG {
         colorFondo[1] = 0.6f;
         colorFondo[2] = 0.6f;
         colorFondo[3] = 1.0f;
+
+        materiales["Default"] = Material();
     }
 
     // Destructor
@@ -220,6 +222,7 @@ namespace PAG {
         ShaderProgram* programa = obtenerShaderProgram(nombreShader);
         Modelo* nuevo = new Modelo(ruta);
         nuevo->setShaderProgram(programa, nombreShader);
+        nuevo->setMaterial(&materiales["Default"], "Default");
 
         // Para que no aparezcan en el mismo sitio: primera casilla de la rejilla libre
         int casilla = 0;

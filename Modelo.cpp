@@ -109,6 +109,11 @@ namespace PAG {
         nombreShader = nombre;
     }
 
+    void Modelo::setMaterial(Material* nuevoMaterial, const std::string& nombre) {
+        material = nuevoMaterial;
+        nombreMaterial = nombre;
+    }
+
     void Modelo::trasladar(const glm::vec3& desplazamiento) {
         transformacion = glm::translate(transformacion, desplazamiento);
     }

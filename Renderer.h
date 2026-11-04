@@ -12,6 +12,7 @@
 #include "ShaderProgram.h"
 #include "Camara.h"
 #include "Modelo.h"
+#include "Material.h"
 
 // Dentro de el espacio de nombres PAG
 namespace PAG {
@@ -24,6 +25,8 @@ namespace PAG {
 
         // Shader programs cargados por nombre, el renderer es su propietario
         std::map<std::string, ShaderProgram*> shaderPrograms;
+        // Materiales por nombre
+        std::map<std::string, Material> materiales;
         Camara camara;
         std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
         std::vector<int> casillas; // Casilla de la rejilla de cada modelo, en el mismo orden que modelos
