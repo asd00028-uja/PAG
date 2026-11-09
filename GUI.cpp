@@ -279,6 +279,47 @@ namespace PAG {
                     }
                     ImGui::EndTabItem();
                 }
+                if (ImGui::BeginTabItem("Modify")) {
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(false, WindowType::Materials, &nombresMateriales);
+                    }
+                    ImGui::Text("Select material");
+                    if (ImGui::BeginCombo("##materialModificado", materialModificado.c_str())) {
+                        for (size_t i = 0; i < nombresMateriales.size(); i++) {
+                            ImGui::PushID(static_cast<int>(i));
+                            if (ImGui::Selectable(nombresMateriales[i].c_str(), materialModificado == nombresMateriales[i])) {
+                                materialModificado = nombresMateriales[i];
+                                cargarMaterial = true;
+                            }
+                            ImGui::PopID();
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    // Solo pedimos los valores al elegir material, si no se perderían los cambios de los sliders
+                    if (cargarMaterial) {
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            listeners[i]->wakeUp(false, WindowType::ModifyMaterial, materialModificado.c_str(),
+                                                 ambienteModificado, difusoModificado, especularModificado,
+                                                 &brilloModificado);
+                        }
+                        cargarMaterial = false;
+                    }
+
+                    ImGui::SliderFloat3("Ambient", ambienteModificado, 0.0f, 1.0f);
+                    ImGui::SliderFloat3("Diffuse", difusoModificado, 0.0f, 1.0f);
+                    ImGui::SliderFloat3("Specular", especularModificado, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Shininess", &brilloModificado, 1.0f, 128.0f);
+                    if (ImGui::Button("Modify")) {
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            listeners[i]->wakeUp(true, WindowType::ModifyMaterial, materialModificado.c_str(),
+                                                 ambienteModificado, difusoModificado, especularModificado,
+                                                 brilloModificado);
+                        }
+                        anadirMensaje("Material modificado: " + materialModificado);
+                    }
+                    ImGui::EndTabItem();
+                }
                 ImGui::EndTabBar();
             }
         }

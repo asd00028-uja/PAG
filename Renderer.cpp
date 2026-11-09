@@ -222,6 +222,48 @@ namespace PAG {
                 }
                 break;
             }
+            case WindowType::Materials: {
+                std::va_list args;
+                va_start(args, t);
+                if (!enviar) {
+                    // La interfaz nos pide los nombres de los materiales
+                    std::vector<std::string>* nombres = va_arg(args, std::vector<std::string>*);
+                    nombres->clear();
+                    for ( auto& material : materiales ) {
+                        nombres->push_back(material.first);
+                    }
+                }
+                va_end(args);
+                break;
+            }
+            case WindowType::ModifyMaterial: {
+                std::va_list args;
+                va_start(args, t);
+                const char* nombre = va_arg(args, const char*);
+                float* ambiente = va_arg(args, float*);
+                float* difuso = va_arg(args, float*);
+                float* especular = va_arg(args, float*);
+                if (enviar) {
+                    // La interfaz manda los nuevos valores del material
+                    float brillo = static_cast<float>(va_arg(args, double));
+                    modificaMaterial(nombre, Material(glm::vec3(ambiente[0], ambiente[1], ambiente[2]),
+                                                      glm::vec3(difuso[0], difuso[1], difuso[2]),
+                                                      glm::vec3(especular[0], especular[1], especular[2]),
+                                                      brillo));
+                } else {
+                    // La interfaz nos pide los valores actuales del material para mostrarlos
+                    float* brillo = va_arg(args, float*);
+                    const Material& material = materiales[nombre];
+                    for ( int i = 0; i < 3; i++ ) {
+                        ambiente[i] = material.getAmbiente()[i];
+                        difuso[i] = material.getDifuso()[i];
+                        especular[i] = material.getEspecular()[i];
+                    }
+                    *brillo = material.getBrillo();
+                }
+                va_end(args);
+                break;
+            }
             default:
                 break;
         }
@@ -329,6 +371,15 @@ namespace PAG {
         if ( materiales.find(nombre) != materiales.end() ) {
             throw std::runtime_error("Ya existe un material llamado " + nombre);
         }
+        materiales[nombre] = material;
+    }
+
+    /**
+     * Cambia los valores de un material existente. Los modelos guardan un puntero al material
+     * del mapa, así que el cambio se ve en todos los que lo tienen asignado
+     * @param nombre Nombre del material a modificar
+     */
+    void Renderer::modificaMaterial(const std::string& nombre, const Material& material) {
         materiales[nombre] = material;
     }
 }

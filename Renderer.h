@@ -52,6 +52,7 @@ namespace PAG {
         void transformaModelo(int indice, TipoTransformacion tipo, float x, float y, float z);
         void cambiaModo(int indice, ModoVisualizacion modo);
         void creaMaterial(const std::string& nombre, const Material& material);
+        void modificaMaterial(const std::string& nombre, const Material& material);
     };
 
 }

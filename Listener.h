@@ -16,7 +16,9 @@ namespace PAG {
         Transformation,
         Camera,
         Visualization,
-        NewMaterial
+        NewMaterial,
+        Materials,
+        ModifyMaterial
     };
 
     /**

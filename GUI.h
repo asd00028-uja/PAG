@@ -42,6 +42,15 @@ namespace PAG {
         float especularNuevo[3] = { 0.0f, 0.0f, 0.0f };
         float brilloNuevo = 1.0f;
 
+        // Datos del material elegido en la pestaña Modify
+        std::vector<std::string> nombresMateriales;
+        std::string materialModificado = "Default";
+        bool cargarMaterial = true;
+        float ambienteModificado[3];
+        float difusoModificado[3];
+        float especularModificado[3];
+        float brilloModificado;
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 
