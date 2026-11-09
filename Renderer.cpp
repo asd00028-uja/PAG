@@ -204,6 +204,24 @@ namespace PAG {
                 va_end(args);
                 break;
             }
+            case WindowType::NewMaterial: {
+                std::va_list args;
+                va_start(args, t);
+                const char* nombre = va_arg(args, const char*);
+                float* ambiente = va_arg(args, float*);
+                float* difuso = va_arg(args, float*);
+                float* especular = va_arg(args, float*);
+                float brillo = static_cast<float>(va_arg(args, double));
+                va_end(args);
+                if (enviar) {
+                    // La interfaz manda el nombre, los tres colores y el brillo del material nuevo
+                    creaMaterial(nombre, Material(glm::vec3(ambiente[0], ambiente[1], ambiente[2]),
+                                                  glm::vec3(difuso[0], difuso[1], difuso[2]),
+                                                  glm::vec3(especular[0], especular[1], especular[2]),
+                                                  brillo));
+                }
+                break;
+            }
             default:
                 break;
         }
@@ -297,5 +315,20 @@ namespace PAG {
      */
     void Renderer::cambiaModo(int indice, ModoVisualizacion modo) {
         modelos[indice]->setModo(modo);
+    }
+
+    /**
+     * Guarda un material nuevo para poder asignarlo después a los modelos
+     * @param nombre Nombre con el que se guarda el material
+     * @throws runtime_error si el nombre está vacío o ya existe un material con ese nombre
+     */
+    void Renderer::creaMaterial(const std::string& nombre, const Material& material) {
+        if ( nombre.empty() ) {
+            throw std::runtime_error("El material necesita un nombre");
+        }
+        if ( materiales.find(nombre) != materiales.end() ) {
+            throw std::runtime_error("Ya existe un material llamado " + nombre);
+        }
+        materiales[nombre] = material;
     }
 }

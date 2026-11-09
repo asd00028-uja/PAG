@@ -257,6 +257,33 @@ namespace PAG {
         }
         ImGui::End();
 
+        ImGui::SetNextWindowPos(ImVec2(400, 10), ImGuiCond_Once);
+        if (ImGui::Begin("Materials", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginTabBar("##pestanasMateriales")) {
+                if (ImGui::BeginTabItem("New")) {
+                    ImGui::InputText("Name", nombreNuevoMaterial, sizeof(nombreNuevoMaterial));
+                    ImGui::SliderFloat3("Ambient", ambienteNuevo, 0.0f, 1.0f);
+                    ImGui::SliderFloat3("Diffuse", difusoNuevo, 0.0f, 1.0f);
+                    ImGui::SliderFloat3("Specular", especularNuevo, 0.0f, 1.0f);
+                    ImGui::SliderFloat("Shininess", &brilloNuevo, 1.0f, 128.0f);
+                    if (ImGui::Button("Create")) {
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            try {
+                                listeners[i]->wakeUp(true, WindowType::NewMaterial, nombreNuevoMaterial,
+                                                     ambienteNuevo, difusoNuevo, especularNuevo, brilloNuevo);
+                                anadirMensaje(std::string("Material creado: ") + nombreNuevoMaterial);
+                            } catch (const std::exception& e) {
+                                anadirMensaje(e.what());
+                            }
+                        }
+                    }
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+        }
+        ImGui::End();
+
         ImGui::SetNextWindowPos(ImVec2(750, 400), ImGuiCond_Once);
         if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };

@@ -35,6 +35,13 @@ namespace PAG {
 
         int objetoVisualizado = 0; // Modelo elegido en la ventana Visualization
 
+        // Datos del material que se está creando en la pestaña New
+        char nombreNuevoMaterial[128] = "";
+        float ambienteNuevo[3] = { 0.0f, 0.0f, 0.0f };
+        float difusoNuevo[3] = { 0.0f, 0.0f, 0.0f };
+        float especularNuevo[3] = { 0.0f, 0.0f, 0.0f };
+        float brilloNuevo = 1.0f;
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 
