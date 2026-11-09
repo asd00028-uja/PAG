@@ -116,3 +116,77 @@ classDiagram
     Renderer *-- Camara
     Modelo --> ShaderProgram : usa
 ```
+
+## Cambios en la práctica 7
+He creado la clase `Material` que guarda los atributos de un material. `Renderer` guarda los materiales y cada `Modelo` tiene un puntero al material que usa.
+
+En los shaders, hay dos implementaciones con subrutinas: un colorAlambre que es rojo y colorSolido que devuelve el color difuso del material.
+
+He añadido a la GUI más ventanas: una ventana Visualization para cambiar de modo Solido a Wireframe, y una de Materiales, donde se pueden crear, modificar y asignar a modelos cargados.
+
+```mermaid
+classDiagram
+    class Listener {
+        <<interface>>
+        +wakeUp(enviar, t, ...)
+    }
+    class Renderer {
+        -map~string, ShaderProgram*~ shaderPrograms
+        -map~string, Material~ materiales
+        -vector~Modelo*~ modelos
+        -Camara camara
+        +cargaModelo(ruta, nombreShader)
+        +eliminaModelo(indice)
+        +transformaModelo(indice, tipo, x, y, z)
+        +cambiaModo(indice, modo)
+        +creaMaterial(nombre, material)
+        +modificaMaterial(nombre, material)
+        +asignaMaterial(indice, nombre)
+        +refrescar()
+    }
+    class Modelo {
+        -vector~GLfloat~ vertices
+        -vector~GLuint~ indices
+        -mat4 transformacion
+        -ShaderProgram* shaderProgram
+        -Material* material
+        -ModoVisualizacion modo
+        +Modelo(ruta)
+        +dibujar()
+        +setMaterial(material, nombre)
+        +setModo(modo)
+    }
+    class Material {
+        -vec3 ambiente
+        -vec3 difuso
+        -vec3 especular
+        -float brillo
+        +getDifuso()
+        +setDifuso(valor)
+    }
+    class ModoVisualizacion {
+        <<enumeration>>
+        Wireframe
+        Solid
+    }
+    class ShaderProgram {
+        -GLuint id
+        +usar()
+        +setUniform(nombre, valor)
+        +setSubrutina(etapa, nombre)
+    }
+    class Camara
+    class GUI {
+        -FileBrowser navegador
+        +anadirMensaje(mensaje)
+    }
+    Listener <|.. Renderer
+    GUI o-- Listener
+    Renderer *-- Modelo
+    Renderer *-- ShaderProgram
+    Renderer *-- Material
+    Renderer *-- Camara
+    Modelo --> ShaderProgram : usa
+    Modelo --> Material : usa
+    Modelo --> ModoVisualizacion
+``` 
