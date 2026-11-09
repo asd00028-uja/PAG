@@ -218,6 +218,45 @@ namespace PAG {
         }
         ImGui::End();
 
+        ImGui::SetNextWindowPos(ImVec2(750, 260), ImGuiCond_Once);
+        if (ImGui::Begin("Visualization", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            for (size_t i = 0; i < listeners.size(); i++) {
+                listeners[i]->wakeUp(false, WindowType::Models, &nombresModelos);
+            }
+            if (nombresModelos.empty()) {
+                ImGui::Text("No models loaded");
+            } else {
+                if (objetoVisualizado >= static_cast<int>(nombresModelos.size())) {
+                    objetoVisualizado = 0;
+                }
+                ImGui::Text("Select object");
+                if (ImGui::BeginCombo("##objetoVisualizado", nombresModelos[objetoVisualizado].c_str())) {
+                    for (size_t i = 0; i < nombresModelos.size(); i++) {
+                        ImGui::PushID(static_cast<int>(i));
+                        if (ImGui::Selectable(nombresModelos[i].c_str(), objetoVisualizado == static_cast<int>(i))) {
+                            objetoVisualizado = static_cast<int>(i);
+                        }
+                        ImGui::PopID();
+                    }
+                    ImGui::EndCombo();
+                }
+
+                // Pedimos el modo actual del modelo para mostrarlo en el desplegable
+                int modo = 0;
+                for (size_t i = 0; i < listeners.size(); i++) {
+                    listeners[i]->wakeUp(false, WindowType::Visualization, objetoVisualizado, &modo);
+                }
+                const char* modos[] = { "Wireframe", "Solid" }; // Mismo orden que ModoVisualizacion
+                ImGui::Text("Visualization mode");
+                if (ImGui::Combo("##modo", &modo, modos, IM_ARRAYSIZE(modos))) {
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(true, WindowType::Visualization, objetoVisualizado, modo);
+                    }
+                }
+            }
+        }
+        ImGui::End();
+
         ImGui::SetNextWindowPos(ImVec2(750, 400), ImGuiCond_Once);
         if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };

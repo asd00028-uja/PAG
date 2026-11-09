@@ -14,7 +14,8 @@ namespace PAG {
         FileLoading,
         Models,
         Transformation,
-        Camera
+        Camera,
+        Visualization
     };
 
     /**

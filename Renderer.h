@@ -50,6 +50,7 @@ namespace PAG {
         void cargaModelo(const std::string& ruta, const std::string& nombreShader);
         void eliminaModelo(int indice);
         void transformaModelo(int indice, TipoTransformacion tipo, float x, float y, float z);
+        void cambiaModo(int indice, ModoVisualizacion modo);
     };
 
 }

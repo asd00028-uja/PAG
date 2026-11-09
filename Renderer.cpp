@@ -189,6 +189,21 @@ namespace PAG {
                 va_end(args);
                 break;
             }
+            case WindowType::Visualization: {
+                std::va_list args;
+                va_start(args, t);
+                int indice = va_arg(args, int);
+                if (enviar) {
+                    // La interfaz manda el modelo y su nuevo modo
+                    cambiaModo(indice, static_cast<ModoVisualizacion>(va_arg(args, int)));
+                } else {
+                    // La interfaz nos pide el modo actual del modelo, para marcarlo
+                    int* modo = va_arg(args, int*);
+                    *modo = static_cast<int>(modelos[indice]->getModo());
+                }
+                va_end(args);
+                break;
+            }
             default:
                 break;
         }
@@ -273,5 +288,14 @@ namespace PAG {
             case TipoTransformacion::RotateZ:   modelo->rotar(x, glm::vec3(0.0f, 0.0f, 1.0f)); break;
             case TipoTransformacion::Scale:     modelo->escalar(glm::vec3(x, y, z)); break;
         }
+    }
+
+    /**
+     * Cambia el modo de visualización (alambre o sólido) de un modelo
+     * @param indice Posición del modelo en la lista de modelos
+     * @param modo Nuevo modo de visualización
+     */
+    void Renderer::cambiaModo(int indice, ModoVisualizacion modo) {
+        modelos[indice]->setModo(modo);
     }
 }

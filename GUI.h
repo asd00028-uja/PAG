@@ -33,6 +33,8 @@ namespace PAG {
         TipoTransformacion tipoTransformacion = TipoTransformacion::Translate;
         float valoresTransformacion[3] = { 0.0f, 0.0f, 0.0f }; // Desplazamiento, escala o grados (el primero)
 
+        int objetoVisualizado = 0; // Modelo elegido en la ventana Visualization
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 
