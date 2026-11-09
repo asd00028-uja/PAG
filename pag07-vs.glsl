@@ -3,7 +3,6 @@ layout (location = 0) in vec3 posicion;
 layout (location = 1) in vec3 normal;
 
 uniform mat4 mModelViewProj;
-uniform mat4 mModelView;
 
 out salidaVS
 {
@@ -13,7 +12,7 @@ out salidaVS
 
 void main ()
 {
-    salida.posicionV = vec3 ( mModelView * vec4 ( posicion, 1 ) );
-    salida.normalV = normalize ( mat3 ( transpose ( inverse ( mModelView ) ) ) * normal );
+    salida.posicionV = posicion;
+    salida.normalV = normal;
     gl_Position = mModelViewProj * vec4 ( posicion, 1 );
 }

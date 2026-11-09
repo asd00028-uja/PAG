@@ -22,7 +22,7 @@ namespace PAG {
         static GUI* instancia;
 
         std::vector<Listener*> listeners;
-        char nombreShader[128] = "";
+        char nombreShader[128] = "../pag07";
         ImGui::FileBrowser navegador; // Ventana para elegir el fichero
         std::string rutaModelo; // Ruta del fichero OBJ elegido, pendiente de cargar
         std::string nombreModelo; // Nombre de ese fichero, para mostrarlo

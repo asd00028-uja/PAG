@@ -64,13 +64,25 @@ namespace PAG {
      */
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
         glm::mat4 proyeccionVision = camara.getProyeccion() * camara.getVision();
         for ( Modelo* modelo : modelos ) {
             ShaderProgram* programa = modelo->getShaderProgram();
             programa->usar();
             programa->setUniform("mModelViewProj",
                                  proyeccionVision * modelo->getTransformacion());
+            programa->setUniform("uDifuso", modelo->getMaterial()->getDifuso());
+
+            // Las subrutinas se pierden con cada glUseProgram, hay que activarlas aquí
+            switch ( modelo->getModo() ) {
+                case ModoVisualizacion::Wireframe:
+                    glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
+                    programa->setSubrutina(GL_FRAGMENT_SHADER, "colorAlambre");
+                    break;
+                case ModoVisualizacion::Solid:
+                    glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
+                    programa->setSubrutina(GL_FRAGMENT_SHADER, "colorSolido");
+                    break;
+            }
             modelo->dibujar();
         }
     }

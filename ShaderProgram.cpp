@@ -63,4 +63,30 @@ namespace PAG {
         glUniformMatrix4fv(ubicacion, 1, GL_FALSE, glm::value_ptr(valor));
     }
 
+    /**
+     * Asigna un vector de 3 componentes a un uniform del shader program
+     */
+    void ShaderProgram::setUniform(const std::string& nombre, const glm::vec3& valor) const {
+        GLint ubicacion = glGetUniformLocation(id, nombre.c_str());
+        if (ubicacion == -1) {
+            throw std::runtime_error("El shader program no tiene el uniform " + nombre);
+        }
+        glUniform3fv(ubicacion, 1, glm::value_ptr(valor));
+    }
+
+    /**
+     * Activa una subrutina de una etapa del shader program. Hay que llamarlo después de
+     * usar(), porque glUseProgram desactiva las subrutinas
+     * @param etapa GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...
+     * @param nombre Nombre de la función subrutina en el shader
+     * @throws runtime_error si la etapa no tiene esa subrutina
+     */
+    void ShaderProgram::setSubrutina(GLenum etapa, const std::string& nombre) const {
+        GLuint indice = glGetSubroutineIndex(id, etapa, nombre.c_str());
+        if (indice == GL_INVALID_INDEX) {
+            throw std::runtime_error("El shader program no tiene la subrutina " + nombre);
+        }
+        glUniformSubroutinesuiv(etapa, 1, &indice);
+    }
+
 }
