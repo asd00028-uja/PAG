@@ -18,7 +18,8 @@ namespace PAG {
         Visualization,
         NewMaterial,
         Materials,
-        ModifyMaterial
+        ModifyMaterial,
+        AssignMaterial
     };
 
     /**

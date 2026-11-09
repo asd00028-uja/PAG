@@ -264,6 +264,21 @@ namespace PAG {
                 va_end(args);
                 break;
             }
+            case WindowType::AssignMaterial: {
+                std::va_list args;
+                va_start(args, t);
+                int indice = va_arg(args, int);
+                if (enviar) {
+                    // La interfaz manda el modelo y el nombre del material
+                    asignaMaterial(indice, va_arg(args, const char*));
+                } else {
+                    // La interfaz nos pide el material que tiene ahora el modelo
+                    std::string* nombre = va_arg(args, std::string*);
+                    *nombre = modelos[indice]->getNombreMaterial();
+                }
+                va_end(args);
+                break;
+            }
             default:
                 break;
         }
@@ -381,5 +396,14 @@ namespace PAG {
      */
     void Renderer::modificaMaterial(const std::string& nombre, const Material& material) {
         materiales[nombre] = material;
+    }
+
+    /**
+     * Asigna a un modelo uno de los materiales guardados
+     * @param indice Posición del modelo en la lista de modelos
+     * @param nombre Nombre del material
+     */
+    void Renderer::asignaMaterial(int indice, const std::string& nombre) {
+        modelos[indice]->setMaterial(&materiales[nombre], nombre);
     }
 }

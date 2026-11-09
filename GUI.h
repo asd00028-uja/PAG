@@ -51,6 +51,10 @@ namespace PAG {
         float especularModificado[3];
         float brilloModificado;
 
+        // Pestaña Assign
+        int objetoAsignado = 0;
+        std::string materialAsignado = "Default";
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 

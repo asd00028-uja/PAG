@@ -320,6 +320,57 @@ namespace PAG {
                     }
                     ImGui::EndTabItem();
                 }
+                if (ImGui::BeginTabItem("Assign")) {
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(false, WindowType::Models, &nombresModelos);
+                        listeners[i]->wakeUp(false, WindowType::Materials, &nombresMateriales);
+                    }
+                    if (nombresModelos.empty()) {
+                        ImGui::Text("No models loaded");
+                    } else {
+                        if (objetoAsignado >= static_cast<int>(nombresModelos.size())) {
+                            objetoAsignado = 0;
+                        }
+                        ImGui::Text("Select object");
+                        if (ImGui::BeginCombo("##objetoAsignado", nombresModelos[objetoAsignado].c_str())) {
+                            for (size_t i = 0; i < nombresModelos.size(); i++) {
+                                ImGui::PushID(static_cast<int>(i));
+                                if (ImGui::Selectable(nombresModelos[i].c_str(), objetoAsignado == static_cast<int>(i))) {
+                                    objetoAsignado = static_cast<int>(i);
+                                }
+                                ImGui::PopID();
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        std::string materialActual;
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            listeners[i]->wakeUp(false, WindowType::AssignMaterial, objetoAsignado, &materialActual);
+                        }
+                        ImGui::Text("Current material: %s", materialActual.c_str());
+
+                        ImGui::Text("Select material");
+                        if (ImGui::BeginCombo("##materialAsignado", materialAsignado.c_str())) {
+                            for (size_t i = 0; i < nombresMateriales.size(); i++) {
+                                ImGui::PushID(static_cast<int>(i));
+                                if (ImGui::Selectable(nombresMateriales[i].c_str(), materialAsignado == nombresMateriales[i])) {
+                                    materialAsignado = nombresMateriales[i];
+                                }
+                                ImGui::PopID();
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        if (ImGui::Button("Assign")) {
+                            for (size_t i = 0; i < listeners.size(); i++) {
+                                listeners[i]->wakeUp(true, WindowType::AssignMaterial, objetoAsignado,
+                                                     materialAsignado.c_str());
+                            }
+                            anadirMensaje("Material " + materialAsignado + " asignado a " + nombresModelos[objetoAsignado]);
+                        }
+                    }
+                    ImGui::EndTabItem();
+                }
                 ImGui::EndTabBar();
             }
         }
