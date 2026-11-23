@@ -24,6 +24,7 @@ namespace PAG {
         void usar() const;
         void setUniform(const std::string& nombre, const glm::mat4& valor) const;
         void setUniform(const std::string& nombre, const glm::vec3& valor) const;
+        void setUniform(const std::string& nombre, float valor) const;
         void setSubrutina(GLenum etapa, const std::string& nombre) const;
         GLuint getId() const { return id; }
     };

@@ -6,7 +6,17 @@ in salidaVS
     vec3 normalV;
 } entrada;
 
+// Material
+uniform vec3 uAmbiente;
 uniform vec3 uDifuso;
+uniform vec3 uEspecular;
+uniform float uBrillo;
+
+// Luz (posición en espacio de visión)
+uniform vec3 uIa;
+uniform vec3 uId;
+uniform vec3 uIs;
+uniform vec3 uPosicionLuz;
 
 out vec4 colorFragmento;
 
@@ -21,13 +31,22 @@ vec4 colorAlambre ()
 }
 
 subroutine ( fCalcularColor )
-vec4 colorSolido ()
+vec4 luzAmbiente ()
 {
-    // Provisional: luz en la cámara (en espacio de visión la cámara está en el
-    // origen) para comprobar que posición y normal llegan bien transformadas
+    vec3 ambiente = uIa * uAmbiente;
+    return vec4 ( ambiente, 1.0 );
+}
+
+subroutine ( fCalcularColor )
+vec4 luzPuntual ()
+{
     vec3 n = normalize ( entrada.normalV );
-    vec3 l = normalize ( -entrada.posicionV );
-    return vec4 ( uDifuso * max ( dot ( n, l ), 0.0 ), 1.0 );
+    vec3 l = normalize ( uPosicionLuz - entrada.posicionV );
+    vec3 v = normalize ( -entrada.posicionV );
+    vec3 r = reflect ( -l, n );
+    vec3 difusa = uId * uDifuso * max ( dot ( l, n ), 0.0 );
+    vec3 especular = uIs * uEspecular * pow ( max ( dot ( r, v ), 0.0 ), uBrillo );
+    return vec4 ( difusa + especular, 1.0 );
 }
 
 void main ()

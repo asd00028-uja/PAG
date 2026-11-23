@@ -75,6 +75,17 @@ namespace PAG {
     }
 
     /**
+     * Asigna un número real a un uniform del shader program
+     */
+    void ShaderProgram::setUniform(const std::string& nombre, float valor) const {
+        GLint ubicacion = glGetUniformLocation(id, nombre.c_str());
+        if (ubicacion == -1) {
+            throw std::runtime_error("El shader program no tiene el uniform " + nombre);
+        }
+        glUniform1f(ubicacion, valor);
+    }
+
+    /**
      * Activa una subrutina de una etapa del shader program. Hay que llamarlo después de
      * usar(), porque glUseProgram desactiva las subrutinas
      * @param etapa GL_VERTEX_SHADER, GL_FRAGMENT_SHADER...

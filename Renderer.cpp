@@ -69,35 +69,82 @@ namespace PAG {
      */
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        for ( Modelo* modelo : modelos ) {
-            glm::mat4 modelView = camara.getVision() * modelo->getTransformacion();
-            glm::mat4 modelViewIT = glm::transpose(glm::inverse(modelView));
 
-            ShaderProgram* programa = modelo->getShaderProgram();
-            programa->usar();
-            programa->setUniform("mModelViewProj", camara.getProyeccion() * modelView);
-            programa->setUniform("mModelView", modelView);
-            programa->setUniform("mModelViewIT", modelViewIT);
-            programa->setUniform("uDifuso", modelo->getMaterial()->getDifuso());
+        bool primeraPasada = true;
+        for ( const Luz& luz : luces ) {
+            if ( !luz.estaEncendida() ) {
+                continue;
+            }
 
-            // Las subrutinas se pierden con cada glUseProgram, hay que activarlas aquí
-            switch ( modelo->getModo() ) {
-                case ModoVisualizacion::Wireframe:
+            // La primera luz se mezcla con el fondo, las demás se suman a lo que ya hay
+            if ( primeraPasada ) {
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            } else {
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+            }
+
+            // La posición de la luz se pasa al espacio de visión (es un punto, w = 1)
+            glm::vec3 posicionLuz = glm::vec3(camara.getVision() * glm::vec4(luz.getPosicion(), 1.0f));
+
+            // Se dibuja la escena completa con esta luz
+            for ( Modelo* modelo : modelos ) {
+                glm::mat4 modelView = camara.getVision() * modelo->getTransformacion();
+                glm::mat4 modelViewIT = glm::transpose(glm::inverse(modelView));
+                const Material* material = modelo->getMaterial();
+
+                ShaderProgram* programa = modelo->getShaderProgram();
+                programa->usar();
+
+                // 1. Elegir la subrutina
+                if ( modelo->getModo() == ModoVisualizacion::Wireframe ) {
                     glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
                     programa->setSubrutina(GL_FRAGMENT_SHADER, "colorAlambre");
-                    break;
-                case ModoVisualizacion::Solid:
+                } else {
                     glPolygonMode ( GL_FRONT_AND_BACK, GL_FILL );
-                    programa->setSubrutina(GL_FRAGMENT_SHADER, "colorSolido");
-                    break;
+                    switch ( luz.getTipo() ) {
+                        case TipoLuz::Ambiente:
+                            programa->setSubrutina(GL_FRAGMENT_SHADER, "luzAmbiente");
+                            break;
+                        case TipoLuz::Puntual:
+                            programa->setSubrutina(GL_FRAGMENT_SHADER, "luzPuntual");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                // 2. Pasar los uniform que usa esa subrutina
+                programa->setUniform("mModelViewProj", camara.getProyeccion() * modelView);
+                programa->setUniform("mModelView", modelView);
+                programa->setUniform("mModelViewIT", modelViewIT);
+                switch ( luz.getTipo() ) {
+                    case TipoLuz::Ambiente:
+                        programa->setUniform("uAmbiente", material->getAmbiente());
+                        programa->setUniform("uIa", luz.getIa());
+                        break;
+                    case TipoLuz::Puntual:
+                        programa->setUniform("uDifuso", material->getDifuso());
+                        programa->setUniform("uEspecular", material->getEspecular());
+                        programa->setUniform("uBrillo", material->getBrillo());
+                        programa->setUniform("uId", luz.getId());
+                        programa->setUniform("uIs", luz.getIs());
+                        programa->setUniform("uPosicionLuz", posicionLuz);
+                        break;
+                    default:
+                        break;
+                }
+
+                modelo->dibujar();
             }
-            modelo->dibujar();
+            primeraPasada = false;
         }
     }
 
     void Renderer::inicializar() {
         glClearColor(colorFondo[0], colorFondo[1], colorFondo[2], colorFondo[3]);
+        glEnable ( GL_BLEND );       // Mezcla para sumar el resultado de cada luz
         glEnable ( GL_DEPTH_TEST );
+        glDepthFunc ( GL_LEQUAL );   // "Menor o igual"
         glEnable ( GL_MULTISAMPLE );
     }
 
