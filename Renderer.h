@@ -58,6 +58,7 @@ namespace PAG {
         void asignaMaterial(int indice, const std::string& nombre);
         void modificaLuz(int indice, const Luz& luz);
         void creaLuz(const Luz& luz);
+        void eliminaLuz(int indice);
     };
 
 }

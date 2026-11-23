@@ -19,7 +19,11 @@ void error_callback ( int errno, const char* desc )
 // - Esta función callback será llamada cada vez que el área de dibujo
 // OpenGL deba ser redibujada.
 void window_refresh_callback ( GLFWwindow *window ) {
-    PAG::Renderer::getInstancia().refrescar();
+    try {
+        PAG::Renderer::getInstancia().refrescar();
+    } catch (const std::exception& e) {
+        PAG::GUI::getInstancia().anadirMensaje(e.what());
+    }
     PAG::GUI::getInstancia().render();
 
     // - GLFW usa un doble buffer para que no haya parpadeo. Esta orden
@@ -187,7 +191,13 @@ int main()
     // botón de cerrar la ventana (la X).
     while ( !glfwWindowShouldClose ( window ) )
     {
-        PAG::Renderer::getInstancia().refrescar();
+        // Un error al dibujar (por ejemplo, un shader sin las subrutinas de luz)
+        // se muestra en la ventana de mensajes en vez de cerrar la aplicación
+        try {
+            PAG::Renderer::getInstancia().refrescar();
+        } catch (const std::exception& e) {
+            PAG::GUI::getInstancia().anadirMensaje(e.what());
+        }
         PAG::GUI::getInstancia().render();
         glfwSwapBuffers ( window );
         glfwPollEvents ();

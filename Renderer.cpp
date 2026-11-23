@@ -363,7 +363,10 @@ namespace PAG {
             case WindowType::Lights: {
                 std::va_list args;
                 va_start(args, t);
-                if (!enviar) {
+                if (enviar) {
+                    // La interfaz nos manda el índice de la luz a eliminar
+                    eliminaLuz(va_arg(args, int));
+                } else {
                     // La interfaz nos pide los nombres de las luces
                     std::vector<std::string>* nombres = va_arg(args, std::vector<std::string>*);
                     nombres->clear();
@@ -604,5 +607,13 @@ namespace PAG {
             }
         }
         luces.push_back(luz);
+    }
+
+    /**
+     * Quita una luz de la escena
+     * @param indice Posición de la luz en la lista de luces
+     */
+    void Renderer::eliminaLuz(int indice) {
+        luces.erase(luces.begin() + indice);
     }
 }

@@ -85,7 +85,9 @@ namespace PAG {
 
     /* Añade un mensaje a la ventana de mensajes */
     void GUI::anadirMensaje(const std::string& mensaje) {
-        mensajes.push_back(mensaje);
+        if (mensajes.empty() || mensajes.back() != mensaje) {
+            mensajes.push_back(mensaje);
+        }
     }
 
     void GUI::render() {
@@ -469,6 +471,15 @@ namespace PAG {
                                                      iaLuz, idLuz, isLuz, posicionLuz, direccionLuz,
                                                      gammaLuz, sLuz);
                             }
+                        }
+
+                        if (ImGui::Button("Delete")) {
+                            std::string nombre = nombresLuces[luzSeleccionada];
+                            for (size_t i = 0; i < listeners.size(); i++) {
+                                listeners[i]->wakeUp(true, WindowType::Lights, luzSeleccionada);
+                            }
+                            anadirMensaje("Luz eliminada: " + nombre);
+                            luzSeleccionada = 0;
                         }
                     }
                     ImGui::EndTabItem();
