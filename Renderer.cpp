@@ -26,6 +26,11 @@ namespace PAG {
         colorFondo[3] = 1.0f;
 
         materiales["Default"] = Material();
+
+        luces.push_back(Luz(TipoLuz::Ambiente));
+        Luz puntual(TipoLuz::Puntual);
+        puntual.setPosicion(glm::vec3(-3.0f, 2.0f, 2.0f));
+        luces.push_back(puntual);
     }
 
     // Destructor

@@ -13,6 +13,7 @@
 #include "Camara.h"
 #include "Modelo.h"
 #include "Material.h"
+#include "Luz.h"
 
 // Dentro de el espacio de nombres PAG
 namespace PAG {
@@ -30,6 +31,7 @@ namespace PAG {
         Camara camara;
         std::vector<Modelo*> modelos; // Modelos de la escena, el renderer es su propietario
         std::vector<int> casillas; // Casilla de la rejilla de cada modelo, en el mismo orden que modelos
+        std::vector<Luz> luces; // Luces de la escena, guardadas por valor
 
         Renderer();
         ShaderProgram* obtenerShaderProgram(const std::string& nombre);
