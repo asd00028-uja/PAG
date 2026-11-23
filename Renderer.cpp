@@ -64,12 +64,15 @@ namespace PAG {
      */
     void Renderer::refrescar () {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glm::mat4 proyeccionVision = camara.getProyeccion() * camara.getVision();
         for ( Modelo* modelo : modelos ) {
+            glm::mat4 modelView = camara.getVision() * modelo->getTransformacion();
+            glm::mat4 modelViewIT = glm::transpose(glm::inverse(modelView));
+
             ShaderProgram* programa = modelo->getShaderProgram();
             programa->usar();
-            programa->setUniform("mModelViewProj",
-                                 proyeccionVision * modelo->getTransformacion());
+            programa->setUniform("mModelViewProj", camara.getProyeccion() * modelView);
+            programa->setUniform("mModelView", modelView);
+            programa->setUniform("mModelViewIT", modelViewIT);
             programa->setUniform("uDifuso", modelo->getMaterial()->getDifuso());
 
             // Las subrutinas se pierden con cada glUseProgram, hay que activarlas aquí

@@ -23,7 +23,11 @@ vec4 colorAlambre ()
 subroutine ( fCalcularColor )
 vec4 colorSolido ()
 {
-    return vec4 ( uDifuso, 1.0 );
+    // Provisional: luz en la cámara (en espacio de visión la cámara está en el
+    // origen) para comprobar que posición y normal llegan bien transformadas
+    vec3 n = normalize ( entrada.normalV );
+    vec3 l = normalize ( -entrada.posicionV );
+    return vec4 ( uDifuso * max ( dot ( n, l ), 0.0 ), 1.0 );
 }
 
 void main ()

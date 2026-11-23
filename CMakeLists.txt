@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.27)
-project(pr07)
+project(pr08)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package( glm REQUIRED )
