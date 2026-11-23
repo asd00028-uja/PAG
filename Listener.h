@@ -19,7 +19,9 @@ namespace PAG {
         NewMaterial,
         Materials,
         ModifyMaterial,
-        AssignMaterial
+        AssignMaterial,
+        Lights,
+        ModifyLight
     };
 
     /**

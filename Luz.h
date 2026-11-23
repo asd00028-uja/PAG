@@ -5,6 +5,7 @@
 #ifndef PR08_LUZ_H
 #define PR08_LUZ_H
 
+#include <string>
 #include <glm/glm.hpp>
 
 namespace PAG {
@@ -25,6 +26,7 @@ namespace PAG {
      * pasar de puntual a direccional y volver a puntual)
      */
     class Luz {
+        std::string nombre;  // Nombre con el que aparece en la interfaz
         TipoLuz tipo;
         bool encendida = true;
 
@@ -37,8 +39,9 @@ namespace PAG {
         float s;             // Exponente para los bordes suaves del foco
 
     public:
-        Luz(TipoLuz tipo);
+        Luz(const std::string& nombre, TipoLuz tipo);
 
+        const std::string& getNombre() const { return nombre; }
         TipoLuz getTipo() const { return tipo; }
         bool estaEncendida() const { return encendida; }
         const glm::vec3& getIa() const { return ia; }

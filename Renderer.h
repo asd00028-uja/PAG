@@ -56,6 +56,7 @@ namespace PAG {
         void creaMaterial(const std::string& nombre, const Material& material);
         void modificaMaterial(const std::string& nombre, const Material& material);
         void asignaMaterial(int indice, const std::string& nombre);
+        void modificaLuz(int indice, const Luz& luz);
     };
 
 }

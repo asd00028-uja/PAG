@@ -27,17 +27,17 @@ namespace PAG {
 
         materiales["Default"] = Material();
 
-        luces.push_back(Luz(TipoLuz::Ambiente));
-        Luz puntual(TipoLuz::Puntual);
+        luces.push_back(Luz("Ambient", TipoLuz::Ambiente));
+        Luz puntual("Point", TipoLuz::Puntual);
         puntual.setPosicion(glm::vec3(-3.0f, 2.0f, 2.0f));
         luces.push_back(puntual);
 
         // Una luz a cada lado: puntual a la izquierda, direccional desde la derecha
         // y foco desde arriba apuntando al primer modelo (en el origen)
-        Luz direccional(TipoLuz::Direccional);
+        Luz direccional("Directional", TipoLuz::Direccional);
         direccional.setDireccion(glm::vec3(-1.0f, -1.0f, 0.0f));
         luces.push_back(direccional);
-        Luz foco(TipoLuz::Foco);
+        Luz foco("Spot", TipoLuz::Foco);
         foco.setPosicion(glm::vec3(0.0f, 3.0f, 0.0f));
         foco.setDireccion(glm::vec3(0.0f, -1.0f, 0.0f));
         luces.push_back(foco);
@@ -360,6 +360,70 @@ namespace PAG {
                 va_end(args);
                 break;
             }
+            case WindowType::Lights: {
+                std::va_list args;
+                va_start(args, t);
+                if (!enviar) {
+                    // La interfaz nos pide los nombres de las luces
+                    std::vector<std::string>* nombres = va_arg(args, std::vector<std::string>*);
+                    nombres->clear();
+                    for ( const Luz& luz : luces ) {
+                        nombres->push_back(luz.getNombre());
+                    }
+                }
+                va_end(args);
+                break;
+            }
+            case WindowType::ModifyLight: {
+                std::va_list args;
+                va_start(args, t);
+                int indice = va_arg(args, int);
+                if (enviar) {
+                    // La interfaz manda los nuevos valores de la luz
+                    float* ia = va_arg(args, float*);
+                    float* id = va_arg(args, float*);
+                    float* is = va_arg(args, float*);
+                    float* posicion = va_arg(args, float*);
+                    float* direccion = va_arg(args, float*);
+                    float gamma = static_cast<float>(va_arg(args, double));
+                    float s = static_cast<float>(va_arg(args, double));
+
+                    // Partimos de una copia de la luz para conservar su nombre y su tipo
+                    Luz luz = luces[indice];
+                    luz.setIa(glm::vec3(ia[0], ia[1], ia[2]));
+                    luz.setId(glm::vec3(id[0], id[1], id[2]));
+                    luz.setIs(glm::vec3(is[0], is[1], is[2]));
+                    luz.setPosicion(glm::vec3(posicion[0], posicion[1], posicion[2]));
+                    luz.setDireccion(glm::vec3(direccion[0], direccion[1], direccion[2]));
+                    luz.setGamma(gamma);
+                    luz.setS(s);
+                    modificaLuz(indice, luz);
+                } else {
+                    // La interfaz nos pide los valores actuales de la luz para mostrarlos
+                    int* tipo = va_arg(args, int*);
+                    float* ia = va_arg(args, float*);
+                    float* id = va_arg(args, float*);
+                    float* is = va_arg(args, float*);
+                    float* posicion = va_arg(args, float*);
+                    float* direccion = va_arg(args, float*);
+                    float* gamma = va_arg(args, float*);
+                    float* s = va_arg(args, float*);
+
+                    const Luz& luz = luces[indice];
+                    *tipo = static_cast<int>(luz.getTipo());
+                    for ( int i = 0; i < 3; i++ ) {
+                        ia[i] = luz.getIa()[i];
+                        id[i] = luz.getId()[i];
+                        is[i] = luz.getIs()[i];
+                        posicion[i] = luz.getPosicion()[i];
+                        direccion[i] = luz.getDireccion()[i];
+                    }
+                    *gamma = luz.getGamma();
+                    *s = luz.getS();
+                }
+                va_end(args);
+                break;
+            }
             default:
                 break;
         }
@@ -486,5 +550,15 @@ namespace PAG {
      */
     void Renderer::asignaMaterial(int indice, const std::string& nombre) {
         modelos[indice]->setMaterial(&materiales[nombre], nombre);
+    }
+
+    /**
+     * Cambia los valores de una luz. Al guardar todos los datos en el mismo objeto,
+     * cambiar de tipo no pierde los valores que no usa el tipo nuevo
+     * @param indice Posición de la luz en la lista de luces
+     * @param luz Luz con los nuevos valores
+     */
+    void Renderer::modificaLuz(int indice, const Luz& luz) {
+        luces[indice] = luz;
     }
 }

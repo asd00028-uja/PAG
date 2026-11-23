@@ -55,6 +55,18 @@ namespace PAG {
         int objetoAsignado = 0;
         std::string materialAsignado = "Default";
 
+        // Ventana Lights: luz elegida y sus valores
+        std::vector<std::string> nombresLuces;
+        int luzSeleccionada = 0;
+        int tipoLuz = 0; // Mismo orden que TipoLuz
+        float iaLuz[3];
+        float idLuz[3];
+        float isLuz[3];
+        float posicionLuz[3];
+        float direccionLuz[3];
+        float gammaLuz;
+        float sLuz;
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 

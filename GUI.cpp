@@ -376,6 +376,73 @@ namespace PAG {
         }
         ImGui::End();
 
+        // Abajo a la izquierda: el pivote (0, 1) coloca la esquina inferior izquierda de la ventana en ese punto
+        ImGui::SetNextWindowPos(ImVec2(10, ImGui::GetIO().DisplaySize.y - 10), ImGuiCond_Once, ImVec2(0.0f, 1.0f));
+        if (ImGui::Begin("Lights", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+            if (ImGui::BeginTabBar("##pestanasLuces")) {
+                if (ImGui::BeginTabItem("Edit")) {
+                    for (size_t i = 0; i < listeners.size(); i++) {
+                        listeners[i]->wakeUp(false, WindowType::Lights, &nombresLuces);
+                    }
+                    if (nombresLuces.empty()) {
+                        ImGui::Text("No lights");
+                    } else {
+                        if (luzSeleccionada >= static_cast<int>(nombresLuces.size())) {
+                            luzSeleccionada = 0;
+                        }
+                        ImGui::Text("Select light");
+                        if (ImGui::BeginCombo("##luz", nombresLuces[luzSeleccionada].c_str())) {
+                            for (size_t i = 0; i < nombresLuces.size(); i++) {
+                                ImGui::PushID(static_cast<int>(i));
+                                if (ImGui::Selectable(nombresLuces[i].c_str(), luzSeleccionada == static_cast<int>(i))) {
+                                    luzSeleccionada = static_cast<int>(i);
+                                }
+                                ImGui::PopID();
+                            }
+                            ImGui::EndCombo();
+                        }
+
+                        // Pedimos los valores actuales de la luz para mostrarlos
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            listeners[i]->wakeUp(false, WindowType::ModifyLight, luzSeleccionada, &tipoLuz,
+                                                 iaLuz, idLuz, isLuz, posicionLuz, direccionLuz,
+                                                 &gammaLuz, &sLuz);
+                        }
+
+                        // Solo se muestran los datos que usa el tipo de la luz (mismo orden que TipoLuz)
+                        bool cambiado = false;
+                        if (tipoLuz == 1 || tipoLuz == 3) {
+                            cambiado |= ImGui::DragFloat3("Position", posicionLuz, 0.05f);
+                        }
+                        if (tipoLuz == 2 || tipoLuz == 3) {
+                            cambiado |= ImGui::DragFloat3("Direction", direccionLuz, 0.05f);
+                        }
+                        if (tipoLuz == 0) {
+                            cambiado |= ImGui::SliderFloat3("Ia", iaLuz, 0.0f, 1.0f);
+                        } else {
+                            cambiado |= ImGui::SliderFloat3("Id", idLuz, 0.0f, 1.0f);
+                            cambiado |= ImGui::SliderFloat3("Is", isLuz, 0.0f, 1.0f);
+                        }
+                        if (tipoLuz == 3) {
+                            cambiado |= ImGui::SliderFloat("Angle (degrees)", &gammaLuz, 0.0f, 90.0f);
+                            cambiado |= ImGui::SliderFloat("Exponent", &sLuz, 0.0f, 256.0f);
+                        }
+
+                        if (cambiado) {
+                            for (size_t i = 0; i < listeners.size(); i++) {
+                                listeners[i]->wakeUp(true, WindowType::ModifyLight, luzSeleccionada,
+                                                     iaLuz, idLuz, isLuz, posicionLuz, direccionLuz,
+                                                     gammaLuz, sLuz);
+                            }
+                        }
+                    }
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+        }
+        ImGui::End();
+
         ImGui::SetNextWindowPos(ImVec2(750, 400), ImGuiCond_Once);
         if (ImGui::Begin("Camera", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             const char* movimientos[] = { "Zoom", "Pan", "Tilt", "Dolly", "Crane", "Orbit" };
