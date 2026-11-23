@@ -67,6 +67,17 @@ namespace PAG {
         float gammaLuz;
         float sLuz;
 
+        // Datos de la luz que se está creando en la pestaña Create
+        int tipoNuevaLuz = 0; // Mismo orden que TipoLuz
+        char nombreNuevaLuz[128] = "";
+        float iaNueva[3] = { 0.2f, 0.2f, 0.2f };
+        float idNueva[3] = { 1.0f, 1.0f, 1.0f };
+        float isNueva[3] = { 1.0f, 1.0f, 1.0f };
+        float posicionNueva[3] = { 0.0f, 3.0f, 3.0f };
+        float direccionNueva[3] = { 0.0f, -1.0f, 0.0f };
+        float gammaNueva = 30.0f;
+        float sNueva = 0.0f;
+
         float colorFondo[3];
         std::vector<std::string> mensajes;
 

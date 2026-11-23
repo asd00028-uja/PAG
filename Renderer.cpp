@@ -374,6 +374,34 @@ namespace PAG {
                 va_end(args);
                 break;
             }
+            case WindowType::NewLight: {
+                std::va_list args;
+                va_start(args, t);
+                if (enviar) {
+                    // La interfaz manda el nombre, el tipo y los datos de la luz nueva
+                    const char* nombre = va_arg(args, const char*);
+                    TipoLuz tipo = static_cast<TipoLuz>(va_arg(args, int));
+                    float* ia = va_arg(args, float*);
+                    float* id = va_arg(args, float*);
+                    float* is = va_arg(args, float*);
+                    float* posicion = va_arg(args, float*);
+                    float* direccion = va_arg(args, float*);
+                    float gamma = static_cast<float>(va_arg(args, double));
+                    float s = static_cast<float>(va_arg(args, double));
+
+                    Luz luz(nombre, tipo);
+                    luz.setIa(glm::vec3(ia[0], ia[1], ia[2]));
+                    luz.setId(glm::vec3(id[0], id[1], id[2]));
+                    luz.setIs(glm::vec3(is[0], is[1], is[2]));
+                    luz.setPosicion(glm::vec3(posicion[0], posicion[1], posicion[2]));
+                    luz.setDireccion(glm::vec3(direccion[0], direccion[1], direccion[2]));
+                    luz.setGamma(gamma);
+                    luz.setS(s);
+                    creaLuz(luz);
+                }
+                va_end(args);
+                break;
+            }
             case WindowType::ModifyLight: {
                 std::va_list args;
                 va_start(args, t);
@@ -560,5 +588,21 @@ namespace PAG {
      */
     void Renderer::modificaLuz(int indice, const Luz& luz) {
         luces[indice] = luz;
+    }
+
+    /**
+     * Añade una luz nueva a la escena
+     * @throws runtime_error si el nombre está vacío o ya existe una luz con ese nombre
+     */
+    void Renderer::creaLuz(const Luz& luz) {
+        if ( luz.getNombre().empty() ) {
+            throw std::runtime_error("La luz necesita un nombre");
+        }
+        for ( const Luz& otra : luces ) {
+            if ( otra.getNombre() == luz.getNombre() ) {
+                throw std::runtime_error("Ya existe una luz llamada " + luz.getNombre());
+            }
+        }
+        luces.push_back(luz);
     }
 }

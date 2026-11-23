@@ -380,6 +380,41 @@ namespace PAG {
         ImGui::SetNextWindowPos(ImVec2(10, ImGui::GetIO().DisplaySize.y - 10), ImGuiCond_Once, ImVec2(0.0f, 1.0f));
         if (ImGui::Begin("Lights", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
             if (ImGui::BeginTabBar("##pestanasLuces")) {
+                if (ImGui::BeginTabItem("Create")) {
+                    // Solo se muestran los datos que usa el tipo elegido
+                    const char* tipos[] = { "Ambient", "Point", "Directional", "Spot" }; // Mismo orden que TipoLuz
+                    ImGui::Combo("##tipoNuevaLuz", &tipoNuevaLuz, tipos, IM_ARRAYSIZE(tipos));
+                    if (tipoNuevaLuz == 1 || tipoNuevaLuz == 3) {
+                        ImGui::DragFloat3("Position", posicionNueva, 0.05f);
+                    }
+                    if (tipoNuevaLuz == 2 || tipoNuevaLuz == 3) {
+                        ImGui::DragFloat3("Direction", direccionNueva, 0.05f);
+                    }
+                    if (tipoNuevaLuz == 0) {
+                        ImGui::SliderFloat3("Ia", iaNueva, 0.0f, 1.0f);
+                    } else {
+                        ImGui::SliderFloat3("Id", idNueva, 0.0f, 1.0f);
+                        ImGui::SliderFloat3("Is", isNueva, 0.0f, 1.0f);
+                    }
+                    if (tipoNuevaLuz == 3) {
+                        ImGui::SliderFloat("Angle (degrees)", &gammaNueva, 0.0f, 90.0f);
+                        ImGui::SliderFloat("Exponent", &sNueva, 0.0f, 256.0f);
+                    }
+                    ImGui::InputText("Name", nombreNuevaLuz, sizeof(nombreNuevaLuz));
+                    if (ImGui::Button("New")) {
+                        for (size_t i = 0; i < listeners.size(); i++) {
+                            try {
+                                listeners[i]->wakeUp(true, WindowType::NewLight, nombreNuevaLuz, tipoNuevaLuz,
+                                                     iaNueva, idNueva, isNueva, posicionNueva, direccionNueva,
+                                                     gammaNueva, sNueva);
+                                anadirMensaje(std::string("Luz creada: ") + nombreNuevaLuz);
+                            } catch (const std::exception& e) {
+                                anadirMensaje(e.what());
+                            }
+                        }
+                    }
+                    ImGui::EndTabItem();
+                }
                 if (ImGui::BeginTabItem("Edit")) {
                     for (size_t i = 0; i < listeners.size(); i++) {
                         listeners[i]->wakeUp(false, WindowType::Lights, &nombresLuces);
