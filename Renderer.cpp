@@ -31,6 +31,16 @@ namespace PAG {
         Luz puntual(TipoLuz::Puntual);
         puntual.setPosicion(glm::vec3(-3.0f, 2.0f, 2.0f));
         luces.push_back(puntual);
+
+        // Una luz a cada lado: puntual a la izquierda, direccional desde la derecha
+        // y foco desde arriba apuntando al primer modelo (en el origen)
+        Luz direccional(TipoLuz::Direccional);
+        direccional.setDireccion(glm::vec3(-1.0f, -1.0f, 0.0f));
+        luces.push_back(direccional);
+        Luz foco(TipoLuz::Foco);
+        foco.setPosicion(glm::vec3(0.0f, 3.0f, 0.0f));
+        foco.setDireccion(glm::vec3(0.0f, -1.0f, 0.0f));
+        luces.push_back(foco);
     }
 
     // Destructor
@@ -85,6 +95,8 @@ namespace PAG {
 
             // La posición de la luz se pasa al espacio de visión (es un punto, w = 1)
             glm::vec3 posicionLuz = glm::vec3(camara.getVision() * glm::vec4(luz.getPosicion(), 1.0f));
+            glm::vec3 direccionLuz = glm::normalize(
+                glm::vec3(camara.getVision() * glm::vec4(luz.getDireccion(), 0.0f)));
 
             // Se dibuja la escena completa con esta luz
             for ( Modelo* modelo : modelos ) {
@@ -108,7 +120,11 @@ namespace PAG {
                         case TipoLuz::Puntual:
                             programa->setSubrutina(GL_FRAGMENT_SHADER, "luzPuntual");
                             break;
-                        default:
+                        case TipoLuz::Direccional:
+                            programa->setSubrutina(GL_FRAGMENT_SHADER, "luzDireccional");
+                            break;
+                        case TipoLuz::Foco:
+                            programa->setSubrutina(GL_FRAGMENT_SHADER, "luzFoco");
                             break;
                     }
                 }
@@ -123,15 +139,25 @@ namespace PAG {
                         programa->setUniform("uIa", luz.getIa());
                         break;
                     case TipoLuz::Puntual:
-                        programa->setUniform("uDifuso", material->getDifuso());
-                        programa->setUniform("uEspecular", material->getEspecular());
-                        programa->setUniform("uBrillo", material->getBrillo());
-                        programa->setUniform("uId", luz.getId());
-                        programa->setUniform("uIs", luz.getIs());
                         programa->setUniform("uPosicionLuz", posicionLuz);
                         break;
-                    default:
+                    case TipoLuz::Direccional:
+                        programa->setUniform("uDireccionLuz", direccionLuz);
                         break;
+                    case TipoLuz::Foco:
+                        programa->setUniform("uPosicionLuz", posicionLuz);
+                        programa->setUniform("uDireccionLuz", direccionLuz);
+                        programa->setUniform("uAnguloFoco", luz.getGamma());
+                        programa->setUniform("uExponenteFoco", luz.getS());
+                        break;
+                }
+                // Puntual, direccional y foco usan además la reflexión difusa y especular
+                if ( luz.getTipo() != TipoLuz::Ambiente ) {
+                    programa->setUniform("uDifuso", material->getDifuso());
+                    programa->setUniform("uEspecular", material->getEspecular());
+                    programa->setUniform("uBrillo", material->getBrillo());
+                    programa->setUniform("uId", luz.getId());
+                    programa->setUniform("uIs", luz.getIs());
                 }
 
                 modelo->dibujar();
