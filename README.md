@@ -190,3 +190,46 @@ classDiagram
     Modelo --> Material : usa
     Modelo --> ModoVisualizacion
 ``` 
+
+## Cambios en la práctica 8
+He creado una clase Luz para manejar las luces de la aplicación con todos sus atributos, usando un enum TipoLuz para los distintos tipos.
+Estas luces las guarda el Renderer en un vector de luces.
+
+La multipasada se hace como en la teoria, un bucle exterior sobre las luces y uno interior sobre los modelos.
+También se han añadido una subrutina por cada tipo de luz.
+
+Por último, se ha añadido una interfaz para controlar las luces: crearlas, editarlas y borrarlas, todos los tipos de luces.
+
+```mermaid
+classDiagram
+    class Renderer {
+        -vector~Luz~ luces
+        -vector~Modelo*~ modelos
+        -map~string, Material~ materiales
+        +creaLuz(luz)
+        +modificaLuz(indice, luz)
+        +eliminaLuz(indice)
+        +refrescar()
+    }
+    class Luz {
+        -string nombre
+        -TipoLuz tipo
+        -bool encendida
+        -vec3 ia
+        -vec3 id
+        -vec3 is
+        -vec3 posicion
+        -vec3 direccion
+        -float gamma
+        -float s
+    }
+    class TipoLuz {
+        <<enumeration>>
+        Ambiente
+        Puntual
+        Direccional
+        Foco
+    }
+    Renderer *-- Luz
+    Luz --> TipoLuz
+```
